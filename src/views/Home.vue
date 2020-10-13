@@ -1,18 +1,45 @@
 <template>
   <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <Navigation />
+    <!-- list -->
+    <b-container>
+      <b-row>
+        <b-col v-for="(item, index) in rooms" :key="index" cols="6">
+          <b-card class="text-center">
+            <b-icon-broadcast /> <br />
+            <h5 class="mb-0">
+              <router-link :to="'/room/' + item">{{ item }}</router-link>
+            </h5>
+          </b-card>
+        </b-col>
+      </b-row>
+    </b-container>
   </div>
 </template>
 
 <script>
-// @ is an alias to /src
-import HelloWorld from '@/components/HelloWorld.vue'
+import { database } from "@/firebase";
+import Navigation from "@/components/layout/Navigation.vue";
 
 export default {
-  name: 'Home',
+  name: "Home",
+  data() {
+    return {
+      rooms: [],
+    };
+  },
   components: {
-    HelloWorld
-  }
-}
+    Navigation,
+  },
+  methods: {
+    getRooms() {
+      database.ref().on("value", (snapshot) => {
+        this.rooms = Object.keys(snapshot.val());
+      });
+    },
+  },
+  mounted() {
+    this.getRooms();
+  },
+};
 </script>
