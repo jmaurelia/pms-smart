@@ -9,8 +9,9 @@ import { auth } from './firebase'
 // Use Vue-Bootstrap
 Vue.use(BootstrapVue)
 Vue.use(IconsPlugin)
-import 'bootstrap/dist/css/bootstrap.css'
-import 'bootstrap-vue/dist/bootstrap-vue.css'
+// import 'bootstrap/dist/css/bootstrap.css'
+// import 'bootstrap-vue/dist/bootstrap-vue.css'
+import './assets/scss/main.scss'
 
 Vue.config.productionTip = false
 
