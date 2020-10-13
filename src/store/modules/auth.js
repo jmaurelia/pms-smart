@@ -4,18 +4,33 @@ import * as fb from '@/firebase'
 export default {
     namespaced: true,
     state: {
-        userProfile: {}
+        userProfile: {},
+        isLoading: false
     },
     mutations: {
         setUserProfile(state, payload) {
             state.userProfile = payload
+        },
+        setIsLoading(state, payload) {
+            state.isLoading = payload
         }
     },
     actions: {
-        async signIn({ dispatch }, payload) {
-            const { user } = await fb.auth.signInWithEmailAndPassword(payload.user, payload.password)
+        async signIn({ dispatch, commit }, payload) {
 
-            dispatch('fetchUserProfile', user)
+            var userData = {}
+            commit('setIsLoading', true)
+
+            await fb.auth.signInWithEmailAndPassword(payload.user, payload.password)
+                .then(data => {
+                    userData = data.user
+                    commit('setIsLoading', false)
+                })
+                .catch(error => {
+                    commit('setIsLoading', false)
+                })
+
+            dispatch('fetchUserProfile', userData)
         },
         async fetchUserProfile({ commit }, payload) {
 
@@ -23,7 +38,7 @@ export default {
 
             commit('setUserProfile', userProfile.data())
 
-            if(router.currentRoute.path === '/login') {
+            if (router.currentRoute.path === '/login') {
                 router.push({ name: 'Home' })
             }
         },
@@ -53,3 +68,5 @@ export default {
 //     }
 // }
 
+// const { user } = await fb.auth.signInWithEmailAndPassword(payload.user, payload.password)
+// dispatch('fetchUserProfile', user)

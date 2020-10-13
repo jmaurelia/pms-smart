@@ -8,7 +8,10 @@
             <b-form-group label="Password">
                 <b-form-input v-model="loginForm.password" type="password" required />
             </b-form-group>
-            <b-button class="mt-3" variant="primary" type="submit">Ingresar</b-button>
+            <b-button class="mt-3" variant="primary" type="submit">
+                <span v-if="!isLoading">Ingresar</span>
+                <b-spinner style="width: 15px; height: 15px;" label="Large Spinner" v-else />
+            </b-button>
         </b-form>
         <!-- ./form -->
     </div>
@@ -16,7 +19,7 @@
 
 <script>
 import { auth } from '@/firebase'
-import { mapActions } from "vuex"
+import { mapActions, mapState } from "vuex"
 
 export default {
     data() {
@@ -26,6 +29,9 @@ export default {
                 password: 'Qwerty123'
             }
         }
+    },
+    computed: {
+        ...mapState('Auth', ['isLoading'])
     },
     methods: {
         ...mapActions('Auth', ['signIn']),
