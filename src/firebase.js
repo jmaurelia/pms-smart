@@ -22,13 +22,11 @@ const database = firebase.database()
 
 // collection references
 const usersCollection = db.collection('users')
-const postsCollection = db.collection('posts')
-const commentsCollection = db.collection('comments')
-const likesCollection = db.collection('likes')
 
 // export utils/refs
 export {
     db,
     auth,
-    database
+    database,
+    usersCollection
 }
