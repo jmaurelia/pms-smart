@@ -39,7 +39,7 @@ export default {
             commit('setUserProfile', userProfile.data())
 
             if (router.currentRoute.path === '/login') {
-                router.push({ name: 'Home' })
+                router.push({ name: 'Admin' })
             }
         },
         async signOut({ commit }) {

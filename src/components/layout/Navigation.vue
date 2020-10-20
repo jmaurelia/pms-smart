@@ -1,6 +1,6 @@
 <template>
   <div class="d-flex justify-content-between align-items-center">
-    <b-media class="align-items-center" no-body>
+    <b-media @click="signOut" class="align-items-center" no-body>
       <b-media-aside>
         <b-button class="avatar" variant="link"><b-icon icon="person-fill" /></b-button>
       </b-media-aside>
@@ -70,7 +70,6 @@
         />
       </g>
     </svg>
-    <!-- <b-icon @click="signOut" icon="exclamation-circle-fill" variant="danger" /> -->
   </div>
 </template>
 

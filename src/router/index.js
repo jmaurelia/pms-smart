@@ -22,6 +22,11 @@ const routes = [
     path: '/login',
     name: 'Login',
     component: () => import('../views/Login.vue')
+  },
+  {
+    path: '/admin',
+    name: 'Admin',
+    component: () => import('../views/Admin.vue')
   }
 ]
 
@@ -34,9 +39,9 @@ const router = new VueRouter({
 router.beforeEach((to, from, next) => {
   const requiresAuth = to.matched.some(x => x.meta.requiresAuth)
 
-  if(requiresAuth && !auth.currentUser) {
-    next({name: 'Login'})
-  } else if(!!auth.currentUser && !requiresAuth) {
+  if (requiresAuth && !auth.currentUser) {
+    next({ name: 'Login' })
+  } else if (!!auth.currentUser && !requiresAuth) {
     next({ name: 'Home' })
   } else {
     next()
