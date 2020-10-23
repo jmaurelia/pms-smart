@@ -12,9 +12,9 @@ const routes = [
     meta: { requiresAuth: true }
   },
   {
-    path: '/room/:name',
+    path: '/room/:roomId',
     name: 'Room',
-    component: () => import('../components/Room.vue'),
+    component: () => import('../components/RoomDetail.vue'),
     meta: { requiresAuth: true }
   },
   {

@@ -20,6 +20,7 @@
       <!-- items -->
       <ul class="list-unstyled">
         <li v-for="(item, index) in rooms" :key="index" class="mb-2">
+          <router-link :to="{ name: 'Room', params: { roomId: item.index } }"></router-link>
           <b-card border-variant="light" class="pms-item-list">
             <div class="d-flex align-items-center pms-item">
               <b-avatar icon="house" size="41px" rounded />
