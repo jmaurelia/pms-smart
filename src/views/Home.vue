@@ -20,20 +20,23 @@
       <!-- items -->
       <ul class="list-unstyled">
         <li v-for="(item, index) in rooms" :key="index" class="mb-2">
-          <router-link :to="{ name: 'Room', params: { roomId: item.index } }"></router-link>
-          <b-card border-variant="light" class="pms-item-list">
-            <div class="d-flex align-items-center pms-item">
-              <b-avatar icon="house" size="41px" rounded />
-              <div class="ml-3 mr-auto">
-                <h6 class="name mb-0">{{ item.name }}</h6>
-                <p class="mb-0 text-secondary">
-                  <span class="mr-3">T: {{ item.temperature.toFixed() }}ºC</span>
-                  <span>h: {{ item.humidity.toFixed() }}%</span>
-                </p>
+          <router-link :to="{ name: 'Room', params: { roomId: index } }">
+            <b-card border-variant="light" class="pms-item-list">
+              <div class="d-flex align-items-center pms-item">
+                <b-avatar icon="house" size="41px" rounded />
+                <div class="ml-3 mr-auto">
+                  <h6 class="name mb-0 text-dark">{{ item.name }}</h6>
+                  <p class="mb-0 text-secondary">
+                    <span class="mr-3"
+                      >T: {{ item.temperature.toFixed() }}ºC</span
+                    >
+                    <span>h: {{ item.humidity.toFixed() }}%</span>
+                  </p>
+                </div>
+                <b-icon class="text-dark" icon="arrow-right-short" />
               </div>
-              <b-icon icon="arrow-right-short" />
-            </div>
-          </b-card>
+            </b-card>
+          </router-link>
         </li>
       </ul>
     </div>
