@@ -45,13 +45,29 @@ body {
     // Header
     &-header {
         padding: $page-padding-x $page-padding-x;
-        min-height: 26%;
+        min-height: 24%;
         background-color: #fff;
 
         // brand
         .brand img {
             width: auto;
             height: 58px;
+        }
+
+        // button
+        .header-action {
+            color: black;
+            font-size: 33px;
+            margin-left: -4px;
+            width: 50px;
+            margin-bottom: 15px;
+        }
+
+        // -- Home
+        &-home {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
     }
 
@@ -110,4 +126,24 @@ body {
     }
 }
 
+// PMS Components
+.pms-title-category {
+    line-height: 1.2;
+
+    > .title {
+        font-size: 18px;
+        font-weight: 700;
+    }
+}
+
+// PMS List
+.pms-item-list {
+    .name {
+        font-size: 18px;
+        font-weight: 600;
+    }
+    .b-icon {
+        font-size: 30px;
+    }
+}
 
