@@ -14,16 +14,22 @@
       <!-- header -->
       <div class="pms-title-category mb-4">
         <h5 class="title mb-0">Bioforest</h5>
-        <p class="text-secondary mb-0">Numero Salas</p>
+        <p class="text-secondary mb-0">{{ countRooms }} Salas</p>
       </div>
 
       <!-- items -->
       <ul class="list-unstyled">
-        <li class="mb-2">
+        <li v-for="(item, index) in rooms" :key="index" class="mb-2">
           <b-card border-variant="light" class="pms-item-list">
             <div class="d-flex align-items-center pms-item">
               <b-avatar icon="house" size="41px" rounded />
-              <h6 class="name ml-3 mr-auto mb-0">Name</h6>
+              <div class="ml-3 mr-auto">
+                <h6 class="name mb-0">{{ item.name }}</h6>
+                <p class="mb-0 text-secondary">
+                  <span class="mr-3">T: {{ item.temperature.toFixed() }}ºC</span>
+                  <span>h: {{ item.humidity.toFixed() }}%</span>
+                </p>
+              </div>
               <b-icon icon="arrow-right-short" />
             </div>
           </b-card>
@@ -34,8 +40,19 @@
 </template>
 
 <script>
-import { database } from "@/firebase";
+import { mapActions, mapState } from "vuex";
 export default {
-  
+  computed: {
+    ...mapState("Rooms", ["rooms"]),
+    countRooms() {
+      return Object.keys(this.rooms).length;
+    },
+  },
+  methods: {
+    ...mapActions("Rooms", ["fetchRooms"]),
+  },
+  created() {
+    this.fetchRooms();
+  },
 };
 </script>
