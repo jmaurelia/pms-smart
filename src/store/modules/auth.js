@@ -1,58 +1,61 @@
 import router from '@/router'
-import * as fb from '@/firebase'
+import * as firebase from '@/firebase'
 
 export default {
     namespaced: true,
     state: {
-        userProfile: {},
-        isLoading: false
+        user: {},
+        isLoading: false,
+        isValidated: null
     },
     mutations: {
-        setUserProfile(state, payload) {
-            state.userProfile = payload
+        SET_USER(state, payload) {
+            state.user = payload
         },
-        setIsLoading(state, payload) {
-            state.isLoading = payload
+        SET_LOADING(state, status) {
+            state.isLoading = status
+        },
+        SET_VALIDATED(state, status) {
+            state.isValidated = status
         }
     },
     actions: {
-        async signIn({ dispatch, commit }, payload) {
+        async logIn({ dispatch, commit }, loginForm) {
 
-            var userData = {}
-            commit('setIsLoading', true)
+            var data = {}
 
-            await fb.auth.signInWithEmailAndPassword(payload.user, payload.password)
-                .then(data => {
-                    userData = data.user
-                    commit('setIsLoading', false)
+            commit('SET_LOADING', true)
+
+            await firebase.auth.signInWithEmailAndPassword(loginForm.email, loginForm.password)
+                .then(resp => {
+                    data = resp.user
+                    router.push({ name: 'Home' })
+                }).catch(err => {
+                    commit('SET_LOADING', false)
+                    commit('SET_VALIDATED', false)
                 })
-                .catch(error => {
-                    commit('setIsLoading', false)
-                })
 
-            dispatch('fetchUserProfile', userData)
+            dispatch('fetchUserProfile', data)
+
         },
-        async fetchUserProfile({ commit }, payload) {
+        async fetchUserProfile({ dispatch, commit }, user) {
 
-            const userProfile = await fb.usersCollection.doc(payload.uid).get()
+            if (Object.keys(user).length !== 0) {
 
-            commit('setUserProfile', userProfile.data())
+                const userData = await firebase.usersCollection.doc(user.uid).get()
 
-            if (router.currentRoute.path === '/login') {
-                router.push({ name: 'Admin' })
+                commit('SET_USER', userData.data())
+
+            } else {
+                // Cerrar Sesión
             }
-        },
-        async signOut({ commit }) {
-            await fb.auth.signOut()
 
-            commit('setUserProfile', {})
+            commit('SET_LOADING', false)
+            commit('SET_VALIDATED', null)
 
-            router.push({ name: 'Login' })
         }
     },
-    getters: {
-
-    }
+    getters: {}
 }
 
 // export default {

@@ -53,25 +53,42 @@
           <p class="mb-0 text-muted">Ingresa con tu cuenta</p>
         </div>
         <!-- Form -->
-        <b-form class="mt-4">
+        <b-form class="mt-4" @submit.prevent="loginProcess(loginForm)">
           <!-- user -->
           <b-form-group label="Email">
             <b-form-input
+              v-model="loginForm.email"
               placeholder="usuario@mail.cl"
               type="email"
               autocomplete="off"
+              :state="isValidated"
               size="lg"
               required
             />
           </b-form-group>
           <!-- password -->
           <b-form-group label="Password">
-            <b-form-input type="password" size="lg" required />
+            <b-form-input
+              v-model="loginForm.password"
+              type="password"
+              size="lg"
+							:state="isValidated"
+              required
+            />
           </b-form-group>
           <!-- button -->
-          <b-button variant="dark" class="mt-4" size="lg" type="sumbit" block
-            >Ingresar</b-button
-          >
+          <div class="text-center mt-4">
+            <b-button
+              variant="dark"
+              size="lg"
+              type="sumbit"
+              :disabled="isLoading"
+              block
+            >
+              <span v-if="!isLoading">Ingresar</span>
+              <b-spinner v-else small label="Spinning" variant="light" />
+            </b-button>
+          </div>
         </b-form>
       </div>
     </div>
@@ -83,6 +100,32 @@
   </div>
 </template>
 
+<script>
+import { mapActions, mapState } from "vuex";
+
+export default {
+  data() {
+    return {
+      loginForm: {
+        email: "usuario@bioforest.cl",
+        password: "Qwerty123",
+      },
+    };
+  },
+  // computed
+  computed: {
+    ...mapState("Auth", ["isLoading", "isValidated"]),
+  },
+  // methods
+  methods: {
+    ...mapActions("Auth", ["logIn"]),
+    loginProcess() {
+      this.logIn(this.loginForm);
+    },
+  },
+};
+</script>
+
 <style lang="scss" scoped>
 .page-login {
   // Header
@@ -91,11 +134,11 @@
     align-items: center;
 
     .brand {
-        svg {
-            fill: black;
-            width: auto;
-            height: 55px;
-        }
+      svg {
+        fill: black;
+        width: auto;
+        height: 55px;
+      }
     }
   }
 
@@ -112,6 +155,31 @@
     // header
     .login-form-header {
       line-height: 1.2;
+    }
+  }
+
+  //   @landscape
+  @media (orientation: landscape) {
+    flex-direction: row;
+
+    //   header
+    .page-header {
+      width: 40%;
+      justify-content: center;
+    }
+
+    // content
+    .page-content {
+      justify-content: center;
+
+      .page-login-form {
+        max-width: 400px;
+      }
+    }
+
+    // footer
+    .page-footer {
+      display: none;
     }
   }
 }
