@@ -38,21 +38,24 @@ export default {
             dispatch('fetchUserProfile', data)
 
         },
-        async fetchUserProfile({ dispatch, commit }, user) {
+        async fetchUserProfile({ commit }, payload) {
 
-            if (Object.keys(user).length !== 0) {
+            const userProfile = await firebase.usersCollection.doc(payload.uid).get()
 
-                const userData = await firebase.usersCollection.doc(user.uid).get()
-
-                commit('SET_USER', userData.data())
-
-            } else {
-                // Cerrar Sesión
-            }
+            commit('SET_USER', userProfile.data())
 
             commit('SET_LOADING', false)
+
             commit('SET_VALIDATED', null)
 
+        },
+        async firebase({ commit }) {
+
+            await firebase.auth.signOut()
+
+            commit('SET_USER', {})
+
+            router.push({ name: 'Login' })
         }
     },
     getters: {}
