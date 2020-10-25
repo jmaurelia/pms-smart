@@ -4,8 +4,8 @@
     <div class="page-header page-header-home">
       <b-link class="header-action"><b-icon icon="list" /></b-link>
       <div class="page-header-section">
-        <h2 class="header-title mb-0">Hola, Juan</h2>
-        <p class="text-secondary mb-0">Investigador</p>
+        <h2 class="header-title mb-0">Hola, {{ this.$store.state.Auth.user.name }}</h2>
+        <p class="text-secondary mb-0">{{ this.$store.state.Auth.user.role }}</p>
       </div>
     </div>
 
