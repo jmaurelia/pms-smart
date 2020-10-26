@@ -49,6 +49,23 @@
           <p class="text-secondary mb-0">
             {{ roomById.programsCount }} Disponibles
           </p>
+          <ul class="list-unstyled mt-5">
+            <li v-for="(item, index) in roomById.programs" :key="index" class="mb-2">
+              <b-card border-variant="light" class="pms-item-list">
+                <div class="d-flex align-items-center pms-item">
+                  <b-avatar icon="power" size="41px" rounded />
+                  <div class="ml-3 mr-auto">
+                    <h6 class="name mb-0 text-dark">Programa {{ index }}</h6>
+                  </div>
+                  <div class="pms-switch">
+                    <b-button @click="updateProgram({index, item, room: $route.params.roomId })" :class="[item ? 'btn-success' : 'btn-secondary']">
+                      {{ item ? "Encendido" : "Apagado" }}
+                    </b-button>
+                  </div>
+                </div>
+              </b-card>
+            </li>
+          </ul>
         </div>
       </div>
     </div>
@@ -72,7 +89,7 @@ export default {
     ...mapState("Rooms", ["roomById", "isLoading"]),
   },
   methods: {
-    ...mapActions("Rooms", ["fetchRoomById"]),
+    ...mapActions("Rooms", ["fetchRoomById", "updateProgram"]),
   },
   created() {
     this.fetchRoomById(this.$route.params.roomId);

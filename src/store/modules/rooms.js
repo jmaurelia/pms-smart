@@ -25,12 +25,31 @@ export default {
             })
 
         },
-        async fetchRoomById({ commit }, payload) {
+        fetchRoomById({ commit }, payload) {
 
             database.ref(payload).on("value", (snapshot) => {
                 commit("SET_ROOMBYID", snapshot.val())
             })
 
+        },
+        async updateProgram({ commit }, payload) {
+
+            if (payload.item !== 0) {
+                console.log('Ya está encendido')
+            } else {
+
+                console.log('Start')
+
+                var progrRef = database.ref(payload.room + "/programs");
+                var programs = this.state.Rooms.roomById.programs
+                var programActive = Object.keys(programs).filter(function (key) { return programs[key] != 0; });
+
+                if (programActive.length != 0) {
+                    await progrRef.child(String(programActive)).set(0);
+                }
+
+                await progrRef.child(payload.index).set("on");
+            }
         }
     },
     getters: {}
