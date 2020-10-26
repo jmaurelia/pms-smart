@@ -6,9 +6,9 @@
         ><b-icon icon="arrow-left-short"
       /></b-link>
       <div class="page-header-section">
-        <h2 class="header-title mb-0">fdfdfd</h2>
+        <h2 class="header-title mb-0">{{ roomById.name }}</h2>
         <p class="text-secondary mb-0">
-          <!-- <span v-if="roomById.description">{{ roomById.description }}</span> -->
+          <span v-if="roomById.description">{{ roomById.description }}</span>
           <span>Sin Descripción</span>
         </p>
       </div>
@@ -23,7 +23,7 @@
                 <h2 class="mb-0"><b-icon icon="thermometer" /></h2>
               </template>
               <h4 class="mb-0 font-weight-bold">
-                {{ roomById.temperature.toFixed(0) }} ºC
+                {{ roomById.temperature }} ºC
               </h4>
               <p class="mb-0 text-secondary text-truncate">Temp.</p>
             </b-media>
@@ -35,7 +35,9 @@
               <template #aside>
                 <h2 class="mb-0"><b-icon icon="droplet-half" /></h2>
               </template>
-              <h4 class="mb-0 font-weight-bold">66%</h4>
+              <h4 class="mb-0 font-weight-bold">
+                {{ roomById.humidity }}%
+              </h4>
               <p class="mb-0 text-secondary text-truncate">Hum.</p>
             </b-media>
           </b-card>
@@ -44,7 +46,7 @@
       <div>
         <div class="pms-title-category my-4">
           <h5 class="title mb-0">Programas</h5>
-          <p class="text-secondary mb-0">008 Disponibles</p>
+          <p class="text-secondary mb-0">{{ roomById.programsCount }} Disponibles</p>
         </div>
       </div>
     </div>
@@ -55,6 +57,11 @@
 import { mapActions, mapState } from "vuex";
 
 export default {
+  data() {
+    return {
+      item: {},
+    };
+  },
   computed: {
     ...mapState("Rooms", ["roomById", "isLoading"]),
   },
