@@ -23,7 +23,7 @@
                 <h2 class="mb-0"><b-icon icon="thermometer" /></h2>
               </template>
               <h4 class="mb-0 font-weight-bold">
-                {{ roomById.temperature }} ºC
+                {{ roomById.temperature | fixedNumber }} ºC
               </h4>
               <p class="mb-0 text-secondary text-truncate">Temp.</p>
             </b-media>
@@ -36,7 +36,7 @@
                 <h2 class="mb-0"><b-icon icon="droplet-half" /></h2>
               </template>
               <h4 class="mb-0 font-weight-bold">
-                {{ roomById.humidity }}%
+                {{ roomById.humidity | fixedNumber }}%
               </h4>
               <p class="mb-0 text-secondary text-truncate">Hum.</p>
             </b-media>
@@ -46,7 +46,9 @@
       <div>
         <div class="pms-title-category my-4">
           <h5 class="title mb-0">Programas</h5>
-          <p class="text-secondary mb-0">{{ roomById.programsCount }} Disponibles</p>
+          <p class="text-secondary mb-0">
+            {{ roomById.programsCount }} Disponibles
+          </p>
         </div>
       </div>
     </div>
@@ -57,10 +59,14 @@
 import { mapActions, mapState } from "vuex";
 
 export default {
-  data() {
-    return {
-      item: {},
-    };
+  filters: {
+    fixedNumber(v) {
+      if (String(v).length >= 3 && v !== undefined) {
+        return v.toFixed(0);
+      } else {
+        return v;
+      }
+    },
   },
   computed: {
     ...mapState("Rooms", ["roomById", "isLoading"]),
@@ -68,7 +74,7 @@ export default {
   methods: {
     ...mapActions("Rooms", ["fetchRoomById"]),
   },
-  mounted() {
+  created() {
     this.fetchRoomById(this.$route.params.roomId);
   },
 };
