@@ -38,7 +38,6 @@ export default {
                 console.log('Ya está encendido')
             } else {
 
-                console.log('Start')
 
                 var progrRef = database.ref(payload.room + "/programs");
                 var programs = this.state.Rooms.roomById.programs
