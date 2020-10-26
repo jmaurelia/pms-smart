@@ -49,11 +49,15 @@ export default {
             commit('SET_VALIDATED', null)
 
         },
-        async firebase({ commit }) {
+        async signOut({ commit }) {
 
             await firebase.auth.signOut()
 
             commit('SET_USER', {})
+
+            commit('Rooms/SET_ROOMS', [], { root: true })
+
+            commit('Rooms/SET_ROOMBYID', {}, { root: true })
 
             router.push({ name: 'Login' })
         }
