@@ -70,8 +70,8 @@ export default {
   data() {
     return {
       loginForm: {
-        email: "usuario@bioforest.cl",
-        password: "Qwerty123",
+        email: "",
+        password: "",
       },
     };
   },

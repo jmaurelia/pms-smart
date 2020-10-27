@@ -38,7 +38,7 @@ export default {
             dispatch('fetchUserProfile', data)
 
         },
-        async fetchUserProfile({ commit }, payload) {
+        async fetchUserProfile({ dispatch, commit }, payload) {
 
             const userProfile = await firebase.usersCollection.doc(payload.uid).get()
 
@@ -47,6 +47,8 @@ export default {
             commit('SET_LOADING', false)
 
             commit('SET_VALIDATED', null)
+
+            dispatch('Rooms/fetchRooms', userProfile.data().rooms, { root: true })
 
         },
         async signOut({ commit }) {

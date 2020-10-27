@@ -33,9 +33,7 @@
                 <div class="ml-3 mr-auto">
                   <h6 class="name mb-0 text-dark">{{ item.name }}</h6>
                   <p class="mb-0 text-secondary d-none">
-                    <span class="mr-3"
-                      >T: {{ item.temperature }}ºC</span
-                    >
+                    <span class="mr-3">T: {{ item.temperature }}ºC</span>
                     <span>h: {{ item.humidity }}%</span>
                   </p>
                 </div>
@@ -48,7 +46,7 @@
     </div>
 
     <!-- sidebar -->
-    <Sidebar :state="toogle" @stateFromChild="toggleSidebar"/>
+    <Sidebar :state="toogle" @stateFromChild="toggleSidebar" />
   </div>
 </template>
 
@@ -71,13 +69,9 @@ export default {
     },
   },
   methods: {
-    ...mapActions("Rooms", ["fetchRooms"]),
     toggleSidebar() {
       this.toogle = !this.toogle;
     },
-  },
-  created() {
-    this.fetchRooms();
   },
 };
 </script>

@@ -1,4 +1,4 @@
-import { database } from "@/firebase";
+import { database, usersCollection } from "@/firebase";
 
 export default {
     namespaced: true,
@@ -18,11 +18,25 @@ export default {
         }
     },
     actions: {
-        fetchRooms({ commit }) {
+        async fetchRooms({ commit }, payload) {
 
-            database.ref().on("value", (snapshot) => {
-                commit("SET_ROOMS", snapshot.val())
-            })
+            var roomsAuth = payload
+            var roomsList = {}
+
+            await database.ref().once('value').then(function (snapshot) { roomsList = snapshot.val() });
+
+            // -------------------------
+
+            const filtered = Object.keys(roomsList)
+                .filter(key => roomsAuth.includes(key))
+                .reduce((obj, key) => {
+                    obj[key] = roomsList[key];
+                    return obj;
+                }, {});
+
+            // .------------------------
+
+            commit("SET_ROOMS", filtered)
 
         },
         fetchRoomById({ commit }, payload) {
@@ -30,7 +44,6 @@ export default {
             database.ref(payload).on("value", (snapshot) => {
                 commit("SET_ROOMBYID", snapshot.val())
             })
-
         },
         async updateProgram({ commit }, payload) {
 
