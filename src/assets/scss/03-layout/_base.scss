@@ -1,0 +1,16 @@
+// html & body
+html,
+body {
+    height: 100%;
+}
+
+// body
+body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+
+    // application
+    #app {
+        height: 100%;
+    }
+}
