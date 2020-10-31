@@ -58,7 +58,7 @@
 
     <!-- footer -->
     <div class="page-footer">
-      <span class="text-secondary">v1.2 © PM Soluciones.</span>
+      <span class="text-secondary">v1.3 © PM Soluciones.</span>
     </div>
   </div>
 </template>
