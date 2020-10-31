@@ -1,0 +1,43 @@
+// sidebar
+$l-sidebar-width: 280px;
+
+.sidebar {
+
+    // block: menu
+    &__menu {
+        top: 0;
+        left: -($l-sidebar-width);
+        width: $l-sidebar-width;
+        height: 100%;
+        z-index: 999;
+        position: fixed;
+        transition: left 0.2s ease;
+        background-color: #061238;
+    }
+
+    // bloack: backderop
+    &__backdrop {
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        position: absolute;
+        z-index: 996;
+        background-color: rgba(black, 0.3);
+    }
+
+    // @media(large)
+    @include large {
+        // menu
+        &__menu {
+            left: 0;
+        }
+    }
+}
+
+// variation: open
+.sidebar--open {
+    .sidebar__menu {
+        left: 0;
+    }
+}

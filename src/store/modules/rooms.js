@@ -4,7 +4,8 @@ export default {
     namespaced: true,
     state: {
         rooms: [],
-        roomById: {}
+        roomById: {},
+        isLoading: true
     },
     mutations: {
         SET_ROOMS(state, payload) {
@@ -37,6 +38,7 @@ export default {
             // .------------------------
 
             commit("SET_ROOMS", filtered)
+            commit("SET_LOADING", false)
 
         },
         fetchRoomById({ commit }, payload) {

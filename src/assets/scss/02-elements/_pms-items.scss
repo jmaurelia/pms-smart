@@ -1,0 +1,47 @@
+//pms-items
+.pms__items {
+    // items
+    &__item {
+        padding: 18px;
+        display: flex;
+        border-radius: 3px;
+        margin-bottom: 12px;
+        align-items: center;
+        background-color: #fff;
+
+        // element: icon
+        .item__icon {
+            width: 42px;
+            line-height: 42px;
+            text-align: center;
+            display: block;
+            color: $color-primary;
+            font-size: 1.6rem;
+            margin-right: 1rem;
+            border-radius: 3px;
+            background-color: rgba($color-primary, 0.15);
+        }
+
+        // element: name
+        .item__name {
+            margin-right: auto;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: black;
+        }
+
+        // element: action
+        .item__action {
+            // icon
+            & > .b-icon {
+                font-size: 2rem;
+                color: black;
+            }
+        }
+    }
+
+    // @media large
+    @include large {
+        margin-bottom: 15px;
+    }
+}
