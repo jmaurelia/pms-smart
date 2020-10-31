@@ -38,6 +38,21 @@
                 color: black;
             }
         }
+
+        // variant
+        &--temperature {
+            .item__icon {
+                color: orangered;
+                background-color: rgba(orangered,0.15);
+            }
+        }
+
+        &--humidity {
+            .item__icon {
+                color: royalblue;
+                background-color: rgba(royalblue,0.15);
+            }
+        }
     }
 
     // @media large

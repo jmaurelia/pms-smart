@@ -20,38 +20,47 @@
         <!-- sensor -->
         <b-row class="pms__items">
           <b-col cols="6">
-            <div class="pms__items__item">
+            <div class="pms__items__item pms__items__item--temperature">
               <div class="item__icon"><b-icon icon="thermometer" /></div>
-              <div class="item__name">{{ roomById.temperature | fixedNumber }} ºC</div>
+              <div class="item__name">
+                {{ roomById.temperature | fixedNumber }} ºC
+              </div>
             </div>
           </b-col>
           <b-col cols="6">
-            <div class="pms__items__item">
+            <div class="pms__items__item pms__items__item--humidity">
               <div class="item__icon"><b-icon icon="droplet-half" /></div>
-              <div class="item__name">{{ roomById.humidity | fixedNumber }}%</div>
+              <div class="item__name">
+                {{ roomById.humidity | fixedNumber }}%
+              </div>
             </div>
           </b-col>
         </b-row>
       </div>
+
+      <!-- loading-page -->
+      <transition name="fade"><Loading v-if="isLoading" /></transition>
     </div>
-
-
-    <!-- loading-page -->
-    <transition name="fade"><Loading v-if="isLoading" /></transition>
+    <!-- sidebar -->
+    <Sidebar />
   </div>
 </template>
 
 <script>
 import { mapActions, mapState } from "vuex";
 import Loading from "./shared/Loading";
+import Sidebar from "./shared/Sidebar";
+import { database, usersCollection } from "@/firebase";
 
 export default {
   components: {
+    Sidebar,
     Loading,
   },
   data() {
     return {
       isLoading: true,
+      roomName: "",
     };
   },
   filters: {
@@ -68,6 +77,12 @@ export default {
   },
   methods: {
     ...mapActions("Rooms", ["fetchRoomById", "updateProgram"]),
+    getData(value) {
+      var starCountRef = database.ref(value);
+      starCountRef.on("value", function (snapshot) {
+        console.log(snapshot.val());
+      });
+    },
     showMsgBoxTwo(data) {
       this.$bvModal
         .msgBoxConfirm(
@@ -96,8 +111,12 @@ export default {
         });
     },
   },
-  created() {
-    this.fetchRoomById(this.$route.params.roomId);
+  async mounted() {
+    this.roomName = this.$route.params.roomId;
+
+    this.getData(this.roomName)
+
+    await this.fetchRoomById(this.roomName);
 
     this.isLoading = false;
   },
