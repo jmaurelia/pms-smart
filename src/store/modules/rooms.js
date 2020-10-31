@@ -46,6 +46,8 @@ export default {
             database.ref(payload).on("value", (snapshot) => {
                 commit("SET_ROOMBYID", snapshot.val())
             })
+            
+
         },
         async updateProgram({ commit }, payload) {
 
