@@ -8,13 +8,25 @@
         <b-link :to="{ name: 'Home' }" class="header__action"
           ><b-icon icon="arrow-left"
         /></b-link>
-        <!-- title -->
-        <h2 class="header__title">{{ dataItem.name }}</h2>
-        <!-- secondary -->
-        <p class="header__secondary text-muted">
-          <span v-if="dataItem.description">{{ dataItem.description }}</span>
-          <span>Sin Descripción</span>
-        </p>
+        <!-- grid -->
+        <b-row align-v="end">
+          <b-col cols="8">
+            <!-- title -->
+            <h2 class="header__title">{{ dataItem.name }}</h2>
+            <!-- secondary -->
+            <p class="header__secondary text-muted">
+              <span v-if="dataItem.description">{{
+                dataItem.description
+              }}</span>
+              <span>Sin Descripción</span>
+            </p>
+          </b-col>
+          <b-col class="text-right">
+            <b-button v-if="!!dataItem.programs" pill variant="danger" size="lg" @click="turnOffPograms()">
+              <b-icon icon="power" aria-hidden="true" class="mb-1" />
+            </b-button>
+          </b-col>
+        </b-row>
       </div>
       <!-- page -->
       <div class="dashboard__page">
@@ -37,8 +49,9 @@
             </div>
           </b-col>
         </b-row>
+        <h5 class="page__title my-3" v-if="!!dataItem.programs">Programas:</h5>
         <!-- switch -->
-        <b-row class="pms__items">
+        <b-row v-if="!!dataItem.programs" class="pms__items">
           <b-col lg="3" v-for="(item, index) in dataItem.programs" :key="index">
             <div class="pms__items__item">
               <div class="item__icon">
@@ -142,11 +155,10 @@ export default {
               if (programActi.length !== 0) {
                 dataRef.child(String(programActi)).set(false);
               }
-              
+
               dataRef.child(data.index).set("1");
 
-              this.getRoom()
-
+              this.getRoom();
             } else {
               console.log("cancelado");
             }
@@ -156,6 +168,32 @@ export default {
           });
         // -------------
       }
+    },
+    turnOffPograms() {
+      console.log("apagar Todos");
+      this.$bvModal
+        .msgBoxConfirm("Apagar todos los programas", {
+          title: "Confirmar",
+          size: "sm",
+          buttonSize: "sm",
+          okVariant: "danger",
+          okTitle: "Confirmar",
+          cancelTitle: "Cancelar",
+          footerClass: "p-2",
+          hideHeaderClose: false,
+          centered: true,
+        })
+        .then((value) => {
+          const programs = Object.keys(this.dataItem.programs);
+          const dataRef = database.ref(this.roomSelected + "/programs");
+
+          programs.forEach((element) => {
+            dataRef.child(element).set(false);
+          });
+        })
+        .catch((e) => {
+          console.log(e);
+        });
     },
   },
   async beforeMount() {
