@@ -4,7 +4,6 @@ $l-spacing: 24px;
 .dashboard {
     width: 100%;
     height: 100%;
-    overflow: hidden;
     background-color: #f2f3f4;
 
     // block: header
@@ -39,7 +38,8 @@ $l-spacing: 24px;
 
     // block: page 
     &__page {
-        padding: $l-spacing $l-spacing 0;
+        padding: $l-spacing;
+        background-color: #f2f3f4;
         
 
         // element: title

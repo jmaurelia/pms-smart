@@ -41,7 +41,12 @@
         <b-row class="pms__items">
           <b-col lg="3" v-for="(item, index) in dataItem.programs" :key="index">
             <div class="pms__items__item">
-              <div class="item__icon"><b-icon icon="brightness-alt-high-fill" style="transform: rotate(180deg)" /></div>
+              <div class="item__icon">
+                <b-icon
+                  icon="brightness-alt-high-fill"
+                  style="transform: rotate(180deg)"
+                />
+              </div>
               <div class="item__name">Programa {{ index }}</div>
               <div
                 class="item__switch"
@@ -71,6 +76,7 @@
 import { database } from "@/firebase";
 import Loading from "./shared/Loading";
 import Sidebar from "./shared/Sidebar";
+import { mapActions } from "vuex";
 
 export default {
   components: {
@@ -94,6 +100,7 @@ export default {
     },
   },
   methods: {
+    ...mapActions("Rooms", ["updateProgram"]),
     getRoom() {
       return new Promise((resolve, reject) => {
         var dataRef = database.ref(this.roomSelected);
@@ -104,8 +111,51 @@ export default {
         });
       });
     },
-    confirmModal(value) {
-      console.log(value);
+    async confirmModal(data) {
+      if (data.item === 1 || data.item === "1") {
+        console.log("Encendido");
+      } else {
+        // -------------
+        this.$bvModal
+          .msgBoxConfirm(
+            "Confirmar si quiere activar el programa " + data.index,
+            {
+              title: "Confirmar",
+              size: "sm",
+              buttonSize: "sm",
+              okVariant: "danger",
+              okTitle: "Confirmar",
+              cancelTitle: "Cancelar",
+              footerClass: "p-2",
+              hideHeaderClose: false,
+              centered: true,
+            }
+          )
+          .then((value) => {
+            if (value) {
+              const dataRef = database.ref(this.roomSelected + "/programs");
+              const programs = this.dataItem.programs;
+              const programActi = Object.keys(programs).filter((key) => {
+                return programs[key] != false;
+              });
+
+              if (programActi.length !== 0) {
+                dataRef.child(String(programActi)).set(false);
+              }
+              
+              dataRef.child(data.index).set("1");
+
+              this.getRoom()
+
+            } else {
+              console.log("cancelado");
+            }
+          })
+          .catch((err) => {
+            console.log("CANCEL");
+          });
+        // -------------
+      }
     },
   },
   async beforeMount() {

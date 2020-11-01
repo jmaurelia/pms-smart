@@ -54,21 +54,11 @@ export default {
         },
         async updateProgram({ commit }, payload) {
 
-            if (payload.item !== 0) {
-                console.log('Ya está encendido')
-            } else {
+            const dataRef = database.ref(payload.room + "/programs");
+            const progRef = this.state.Rooms
 
+            console.log(progRef)
 
-                var progrRef = database.ref(payload.room + "/programs");
-                var programs = this.state.Rooms.roomById.programs
-                var programActive = Object.keys(programs).filter(function (key) { return programs[key] != 0; });
-
-                if (programActive.length != 0) {
-                    await progrRef.child(String(programActive)).set(0);
-                }
-
-                await progrRef.child(payload.index).set("on");
-            }
         }
     },
     getters: {}
