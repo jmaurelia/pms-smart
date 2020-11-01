@@ -68,7 +68,6 @@
             </b-button>
           </div>
         </b-form>
-        </b-form>
       </div>
 
       <!-- footer -->

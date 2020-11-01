@@ -44,7 +44,7 @@ export default {
         fetchRoomById({ commit }, payload) {
 
             return new Promise((resolve, reject) => {
-                database.ref().child(payload).on("value", (snapshot) => {
+                database.ref(payload).on("value", (snapshot) => {
                     commit("SET_ROOMBYID", snapshot.val())
                     resolve();
                 })
