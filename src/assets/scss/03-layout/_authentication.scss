@@ -1,0 +1,73 @@
+// authentication
+.authentication {
+    height: 100%;
+    display: block;
+    background: url("https://www.berger.ca/es/wp-content/uploads/sites/3/2017/05/bkg_invernadero-2500x845.jpg");
+    background-size: cover;
+    background-position: center left;
+
+    // form
+    &__form {
+        height: 100%;
+        padding: 3rem;
+        display: flex;
+        position: relative;
+        align-items: center;
+        background-color: white;
+
+        // block: body
+        &__body {
+            width: 100%;
+            margin-bottom: 6rem;
+        }
+
+        // block: footer
+        &__footer {
+            left: 0;
+            right: 0;
+            bottom: 0;
+            position: absolute;
+            text-align: center;
+            padding-top: 1rem;
+        }
+
+        // element: brand
+        .auth-brand {
+            display: block;
+            margin-bottom: 3rem;
+
+            .logo,
+            svg {
+                width: auto;
+                height: 58px;
+            }
+        }
+
+        // element: spinner
+        .spinner-border {
+            margin-bottom: 6px;
+        }
+    }
+
+    // image
+    &__image {
+        flex: 1;
+        display: none;
+        background-color: rgba(0, 0, 0, 0.3);
+    }
+
+    // @media(large)
+    @include large {
+        display: flex;
+
+        // form
+        &__form {
+            max-width: 600px;
+        }
+
+        // image
+        &__image {
+            display: block;
+        }
+    }
+}

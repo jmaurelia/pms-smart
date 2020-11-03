@@ -1,0 +1,96 @@
+//pms-items
+.pms__items {
+    // items
+    &__item {
+        padding: 18px;
+        display: flex;
+        border-radius: 3px;
+        margin-bottom: 12px;
+        align-items: center;
+        background-color: #fff;
+
+        // element: icon
+        .item__icon {
+            width: 42px;
+            line-height: 42px;
+            text-align: center;
+            display: block;
+            color: $color-primary;
+            font-size: 1.6rem;
+            margin-right: 1rem;
+            border-radius: 3px;
+            background-color: rgba($color-primary, 0.15);
+        }
+
+        // element: name
+        .item__name {
+            margin-right: auto;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: black;
+        }
+
+        // element: action
+        .item__action {
+            // icon
+            & > .b-icon {
+                font-size: 2rem;
+                color: black;
+            }
+        }
+
+        // element: switch
+        $e-pms__switch--height: 33px;
+
+        .item__switch {
+            cursor: pointer;
+            display: inline-block;
+            position: relative;
+            background-color: gray;
+            width: ($e-pms__switch--height * 1.6);
+            height: $e-pms__switch--height;
+            border-radius: 300px;
+
+            &:before {
+                top: 4px;
+                left: 4px;
+                position: absolute;
+                content: '';
+                width: ($e-pms__switch--height - 8px);
+                height: ($e-pms__switch--height - 8px);
+                display: block;
+                border-radius: 300px;
+                background-color: white;
+                transition: all 0.2s ease;
+            }
+
+            &--on {
+                background-color: limegreen;
+
+                &:before {
+                    left: 23px;
+                }
+            }
+        }
+
+        // variant
+        &--temperature {
+            .item__icon {
+                color: orangered;
+                background-color: rgba(orangered, 0.15);
+            }
+        }
+
+        &--humidity {
+            .item__icon {
+                color: royalblue;
+                background-color: rgba(royalblue, 0.15);
+            }
+        }
+    }
+
+    // @media large
+    @include large {
+        margin-bottom: 15px;
+    }
+}
