@@ -26,22 +26,26 @@
         <!-- list programs -->
         <b-row class="pms__items">
           <b-col lg="3" v-for="(item, index) in rooms" :key="index">
-            <router-link class="pms__items__item" :to="{ name: 'Room', params: { roomId: index } }">
-                <div class="item__icon"><b-icon icon="house" /></div>
-                <div class="item__name">{{ item.name }}</div>
-                <div class="item__action">
-                  <b-icon icon="arrow-right-short" />
-                </div>
+            <router-link
+              class="pms__items__item"
+              :to="{ name: 'Room', params: { roomId: index } }"
+            >
+              <div class="item__icon"><b-icon icon="house" /></div>
+              <div class="item__name">{{ item.name }}</div>
+              <div class="item__action">
+                <b-icon icon="arrow-right-short" />
+              </div>
             </router-link>
           </b-col>
         </b-row>
+
+        <!-- loading-page -->
+        <transition name="fade"><Loading v-if="isLoading" /></transition>
       </div>
     </div>
 
     <!-- sidebar -->
     <Sidebar :state="toogle" @stateFromChild="toggleSidebar" />
-    <!-- loading-page -->
-    <transition name="fade"><Loading v-if="isLoading" /></transition>
   </div>
 </template>
 
