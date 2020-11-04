@@ -1,34 +1,35 @@
 <template>
+  <!-- Dashboard -->
   <div class="dashboard">
-    <!-- content -->
+    <!-- Content -->
     <div class="dashboard__content">
-      <!-- header -->
+      <!-- Header -->
       <div class="dashboard__header">
-        <!-- button-toggle -->
+        <!-- BackButton -->
         <b-link :to="{ name: 'Home' }" class="header__action"
           ><b-icon icon="arrow-left"
         /></b-link>
-        <!-- grid -->
+        <!-- Row -->
         <b-row align-v="end">
           <b-col cols="8">
             <!-- title -->
-            <h2 class="header__title">{{ dataItem.name }}</h2>
+            <h2 class="header__title">{{ item.name }}</h2>
             <!-- secondary -->
             <p class="header__secondary text-muted">
-              <span v-if="dataItem.description">{{
-                dataItem.description
-              }}</span>
+              <span v-if="item.description">{{ item.description }}</span>
               <span>Sin Descripción</span>
             </p>
           </b-col>
-          <b-col class="text-right">
-            <b-button v-if="!!dataItem.programs" pill variant="danger" size="lg" @click="turnOffPograms()">
-              <b-icon icon="power" aria-hidden="true" class="mb-1" />
-            </b-button>
+          <b-col cols="4" class="text-right">
+            <b-button @click="offPrograms()" v-if="!!item.programs"
+              ><b-icon icon="power" aria-hidden="true" class="mb-1"
+            /></b-button>
           </b-col>
         </b-row>
       </div>
-      <!-- page -->
+      <!-- ./Header -->
+
+      <!-- Page -->
       <div class="dashboard__page">
         <!-- sensor -->
         <b-row class="pms__items">
@@ -36,23 +37,26 @@
             <div class="pms__items__item pms__items__item--temperature">
               <div class="item__icon"><b-icon icon="thermometer" /></div>
               <div class="item__name">
-                {{ dataItem.temperature | fixedNumber }} ºC
+                {{ item.temperature | fixedNumber }} ºC
               </div>
             </div>
           </b-col>
           <b-col cols="6">
             <div class="pms__items__item pms__items__item--humidity">
               <div class="item__icon"><b-icon icon="droplet-half" /></div>
-              <div class="item__name">
-                {{ dataItem.humidity | fixedNumber }}%
-              </div>
+              <div class="item__name">{{ item.humidity | fixedNumber }}%</div>
             </div>
           </b-col>
         </b-row>
-        <h5 class="page__title my-3" v-if="!!dataItem.programs">Programas:</h5>
+        <h5 class="page__title my-3" v-if="!!item.programs">Programas:</h5>
         <!-- switch -->
-        <b-row v-if="!!dataItem.programs" class="pms__items">
-          <b-col lg="3" v-for="(item, index) in dataItem.programs" :key="index">
+        <b-row v-if="!!item.programs" class="pms__items">
+          <b-col
+            md="6"
+            xl="3"
+            v-for="(item, index) in item.programs"
+            :key="index"
+          >
             <div class="pms__items__item">
               <div class="item__icon">
                 <b-icon
@@ -63,7 +67,7 @@
               <div class="item__name">Programa {{ index }}</div>
               <div
                 class="item__switch"
-                :class="[item ? 'item__switch--on' : '']"
+                :class="[item ? '' : 'item__switch--on']"
                 @click="
                   confirmModal({
                     index,
@@ -76,20 +80,25 @@
           </b-col>
         </b-row>
       </div>
-      <!-- loading -->
-      <transition name="fade"><Loading v-if="isLoading" /></transition>
-    </div>
+      <!-- ./Page -->
 
-    <!-- sidebar -->
+      <!-- Loading -->
+      <transition name="fade"><Loading v-if="isLoading" /></transition>
+      <!-- ./Loading -->
+    </div>
+    <!-- ./Content -->
+
+    <!-- Sidebar -->
     <Sidebar />
+    <!-- ./Sidebar -->
   </div>
+  <!-- ./Dashboard -->
 </template>
 
 <script>
 import { database } from "@/firebase";
 import Loading from "./shared/Loading";
 import Sidebar from "./shared/Sidebar";
-import { mapActions } from "vuex";
 
 export default {
   components: {
@@ -98,40 +107,41 @@ export default {
   },
   data() {
     return {
-      dataItem: "",
-      isLoading: false,
-      roomSelected: this.$route.params.roomId,
+      item: {},
+      database: database.ref(this.$route.params.roomId),
+      isLoading: true,
     };
   },
   filters: {
-    fixedNumber(v) {
-      if (String(v).length >= 3 && v !== undefined) {
-        return v.toFixed(2);
+    fixedNumber(value) {
+      if (String(value).length >= 3 && value !== undefined) {
+        return value.toFixed(2);
       } else {
-        return v;
+        return value;
       }
     },
   },
   methods: {
-    ...mapActions("Rooms", ["updateProgram"]),
-    getRoom() {
+    // GetData Room
+    getData() {
       return new Promise((resolve, reject) => {
-        var dataRef = database.ref(this.roomSelected);
-
-        dataRef.on("value", (snapshot) => {
-          this.dataItem = snapshot.val();
+        this.database.on("value", (snapshot) => {
+          this.item = snapshot.val();
           resolve();
         });
       });
     },
-    async confirmModal(data) {
-      if (data.item === 1 || data.item === "1") {
-        console.log("Encendido");
-      } else {
-        // -------------
+    // Loading Data
+    async loadingData() {
+      await this.getData();
+      this.isLoading = false;
+    },
+    // Update State
+    confirmModal(value) {
+      if (value.item) {
         this.$bvModal
           .msgBoxConfirm(
-            "Confirmar si quiere activar el programa " + data.index,
+            "Confirmar si quiere activar el programa " + value.index,
             {
               title: "Confirmar",
               size: "sm",
@@ -144,33 +154,33 @@ export default {
               centered: true,
             }
           )
-          .then((value) => {
-            if (value) {
-              const dataRef = database.ref(this.roomSelected + "/programs");
-              const programs = this.dataItem.programs;
-              const programActi = Object.keys(programs).filter((key) => {
-                return programs[key] != false;
+          .then((data) => {
+            if (data) {
+              // const
+              const databaseRef = database.ref(
+                this.$route.params.roomId + "/programs"
+              );
+              const programs = this.item.programs;
+              const activeted = Object.keys(programs).filter((x) => {
+                return programs[x] !== true;
               });
 
-              if (programActi.length !== 0) {
-                dataRef.child(String(programActi)).set(false);
+              // validate
+              if (activeted.length !== 0) {
+                databaseRef.child(String(activeted)).set(true);
               }
 
-              dataRef.child(data.index).set("1");
-
-              this.getRoom();
-            } else {
-              console.log("cancelado");
+              // on
+              databaseRef.child(value.index).set(0);
             }
           })
           .catch((err) => {
-            console.log("CANCEL");
+            console.log(err);
           });
-        // -------------
       }
     },
-    turnOffPograms() {
-      console.log("apagar Todos");
+    // All Bottom
+    offPrograms() {
       this.$bvModal
         .msgBoxConfirm("Apagar todos los programas", {
           title: "Confirmar",
@@ -184,11 +194,13 @@ export default {
           centered: true,
         })
         .then((value) => {
-          const programs = Object.keys(this.dataItem.programs);
-          const dataRef = database.ref(this.roomSelected + "/programs");
+          // const
+          const programs = Object.keys(this.item.programs);
+          const databaseRef = database.ref(this.$route.params.roomId + "/programs");
 
-          programs.forEach((element) => {
-            dataRef.child(element).set(false);
+          // set
+          programs.forEach(element => {
+            databaseRef.child(element).set(true);
           });
         })
         .catch((e) => {
@@ -196,14 +208,11 @@ export default {
         });
     },
   },
-  async beforeMount() {
-    this.isLoading = true;
-    await this.getRoom();
-    this.isLoading = false;
+  mounted() {
+    this.loadingData();
   },
   beforeDestroy() {
-    var dataRef = database.ref(this.roomSelected);
-    dataRef.off("value");
+    this.database.off("value");
   },
 };
 </script>

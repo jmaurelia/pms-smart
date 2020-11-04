@@ -41,15 +41,21 @@ export default {
             commit("SET_LOADING", false)
 
         },
-        fetchRoomById({ commit }, payload) {
+        fetchRoomByName({ commit }, roomName) {
 
             return new Promise((resolve, reject) => {
-                database.ref(payload).on("value", (snapshot) => {
-                    commit("SET_ROOMBYID", snapshot.val())
-                    resolve();
-                })
-            })
 
+                database.ref(roomName).on("value", (snapshot) => {
+
+                    commit("SET_ROOMBYID", snapshot.val());
+
+                    console.log(snapshot.val())
+
+                    resolve();
+
+                })
+
+            })
 
         },
         async updateProgram({ commit }, payload) {
