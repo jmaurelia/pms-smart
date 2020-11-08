@@ -25,7 +25,7 @@
 
         <!-- list programs -->
         <b-row class="pms__items">
-          <b-col lg="3" v-for="(item, index) in orderBy" :key="index">
+          <b-col lg="3" v-for="(item, index) in rooms" :key="index">
             <router-link
               class="pms__items__item"
               :to="{ name: 'Room', params: { roomId: index } }"
@@ -72,7 +72,7 @@ export default {
       return Object.keys(this.rooms).length;
     },
     orderBy() {
-      return _.orderBy(this.rooms, "order");
+      return _.sortBy(this.rooms, 'order');
     },
   },
   methods: {
