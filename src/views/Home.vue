@@ -25,12 +25,14 @@
 
         <!-- list programs -->
         <b-row class="pms__items">
-          <b-col lg="3" v-for="(item, index) in rooms" :key="index">
+          <b-col lg="3" v-for="(item, index) in orderBy" :key="index">
             <router-link
               class="pms__items__item"
               :to="{ name: 'Room', params: { roomId: index } }"
             >
-              <div class="item__icon"><b-icon icon="house" /></div>
+              <div class="item__icon">
+                <b-icon :icon="item.type === 'incubator' ? 'lamp' : 'house'" />
+              </div>
               <div class="item__name">{{ item.name }}</div>
               <div class="item__action">
                 <b-icon icon="arrow-right-short" />
@@ -50,6 +52,7 @@
 </template>
 
 <script>
+import _ from "lodash";
 import Sidebar from "../components/shared/Sidebar";
 import Loading from "../components/shared/Loading";
 import { mapActions, mapState } from "vuex";
@@ -67,6 +70,9 @@ export default {
     ...mapState("Rooms", ["rooms", "isLoading"]),
     countRooms() {
       return Object.keys(this.rooms).length;
+    },
+    orderBy() {
+      return _.orderBy(this.rooms, "order");
     },
   },
   methods: {

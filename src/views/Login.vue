@@ -72,7 +72,7 @@
 
       <!-- footer -->
       <div class="authentication__form__footer">
-        <p class="text-muted">PMS Soluciones v1.3</p>
+        <p class="text-muted">PMS Soluciones v.Test</p>
       </div>
     </div>
 
