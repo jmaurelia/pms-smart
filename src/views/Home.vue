@@ -25,15 +25,15 @@
 
         <!-- list programs -->
         <b-row class="pms__items">
-          <b-col lg="3" v-for="(item, index) in rooms" :key="index">
+          <b-col lg="3" v-for="(item, index) in orderBy(rooms, 'order')" :key="index">
             <router-link
               class="pms__items__item"
-              :to="{ name: 'Room', params: { roomId: index } }"
+              :to="{ name: 'Room', params: { roomId: item.$key } }"
             >
               <div class="item__icon">
-                <b-icon :icon="item.type === 'incubator' ? 'lamp' : 'house'" />
+                <b-icon :icon="item.$value.type === 'incubator' ? 'lamp' : 'house'" />
               </div>
-              <div class="item__name">{{ item.name }}</div>
+              <div class="item__name">{{ item.$value.name }}</div>
               <div class="item__action">
                 <b-icon icon="arrow-right-short" />
               </div>
@@ -56,7 +56,10 @@ import _ from "lodash";
 import Sidebar from "../components/shared/Sidebar";
 import Loading from "../components/shared/Loading";
 import { mapActions, mapState } from "vuex";
+import Vue2Filters from "vue2-filters";
+
 export default {
+  mixins: [Vue2Filters.mixin],
   data() {
     return {
       toogle: false,
@@ -70,9 +73,6 @@ export default {
     ...mapState("Rooms", ["rooms", "isLoading"]),
     countRooms() {
       return Object.keys(this.rooms).length;
-    },
-    orderBy() {
-      return _.sortBy(this.rooms, 'order');
     },
   },
   methods: {
