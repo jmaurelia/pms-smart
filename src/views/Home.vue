@@ -69,6 +69,7 @@ export default {
     },
   },
   methods: {
+    ...mapActions("Auth", ["logIn"]),
     toggleSidebar() {
       this.toogle = !this.toogle;
     },

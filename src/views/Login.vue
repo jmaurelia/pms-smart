@@ -3,7 +3,7 @@
     <!-- header -->
     <div class="page-header">
       <div class="brand">
-        <img src="https://www.ubiobio.cl/w/img/isoc.png" alt="UBB">
+        <img src="https://www.ubiobio.cl/w/img/isoc.png" alt="UBB" />
       </div>
     </div>
 
@@ -35,7 +35,7 @@
               v-model="loginForm.password"
               type="password"
               size="lg"
-							:state="isValidated"
+              :state="isValidated"
               required
             />
           </b-form-group>
@@ -70,8 +70,8 @@ export default {
   data() {
     return {
       loginForm: {
-        email: "",
-        password: "",
+        email: "joaquin.maurelia@gmail.com",
+        password: "Pms2020",
       },
     };
   },
@@ -97,7 +97,6 @@ export default {
     align-items: center;
 
     .brand {
-
       img {
         height: 80px;
       }
