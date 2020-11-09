@@ -1,0 +1,69 @@
+// dashboard
+$l-spacing: 24px;
+
+.dashboard {
+    width: 100%;
+    height: 100%;
+    background-color: #f2f3f4;
+
+    // block: header
+    &__header {
+        padding: $l-spacing;
+        background-color: white;
+
+        // element: action
+        .header__action {
+            width: 51px;
+            color: white;
+            display: block;
+            font-size: 1.8rem;
+            line-height: 51px;
+            text-align: center;
+            border-radius: 300px;
+            background-color: $color-primary;
+            margin-bottom: 1rem;
+        }
+
+        // element: title
+        .header__title {
+            font-weight: 700;
+            margin-bottom: 0;
+        }
+
+        // element: secondary
+        .header__secondary {
+            margin-bottom: 0;
+        }
+    }
+
+    // block: page 
+    &__page {
+        padding: $l-spacing;
+        background-color: #f2f3f4;
+        
+
+        // element: title
+        .page__title {
+            font-weight: 700;
+        }
+    }
+
+    // @media large
+    @include large {
+        &__content {
+            margin-left: 280px;
+            height: 100%;
+            position: relative;
+        }
+
+        // header
+        &__header {
+            padding: $l-spacing ($l-spacing * 2);
+        }
+
+        // block: page 
+    &__page {
+        padding: $l-spacing ($l-spacing * 2) 0;
+    }
+    }
+}
