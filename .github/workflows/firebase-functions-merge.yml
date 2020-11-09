@@ -17,7 +17,7 @@ jobs:
       - run: cd functions && yarn && cd ..
       - uses: w9jds/firebase-action@master
         with:
-          args: deploy --project bioforest-smart
+          args: deploy --only functions --project bioforest-smart
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
           FIREBASE_PROJECT: bioforest-smart
