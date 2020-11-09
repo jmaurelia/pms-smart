@@ -2,7 +2,7 @@ const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 
 //  CONFIGURAR
-const MIN_TEMPERATURE = 25;
+const MIN_TEMPERATURE = 19;
 const MAX_TEMPERATURE = 30;
 const PROJECT_ID = "bioforest-smart";
 
@@ -26,7 +26,7 @@ exports.onChangeTemperature = functions.database
     functions.logger.info(
       `[${salaId}] BEFORE: ${beforeValue}ºC, AFTER: ${afterValue}ºC`
     );
-    if (afterValue > MIN_TEMPERATURE && afterValue < MAX_TEMPERATURE) {
+    if (afterValue < MIN_TEMPERATURE && afterValue > MAX_TEMPERATURE) {
       let temperature = afterValue.toFixed(2);
       functions.logger.info(`TEMP: ${temperature}ºC`);
       await app
