@@ -2,7 +2,7 @@ name: CI
 on:
   push:
     branches:
-      - master
+      - main
 jobs:
   firebase-deploy:
     runs-on: ubuntu-latest
