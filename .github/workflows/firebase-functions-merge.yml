@@ -6,12 +6,11 @@ on:
 jobs:
   firebase-deploy:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@master
       - uses: actions/setup-node@master
         with:
-          node-version: "10.x"
+          node-version: "12.x"
       - run: cd functions && yarn && cd ..
       - uses: w9jds/firebase-action@master
         with:
