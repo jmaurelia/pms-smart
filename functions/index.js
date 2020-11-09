@@ -1,73 +1,19 @@
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
-const { google } = require("googleapis");
-const https = require("https");
-// // Create and Deploy Your First Cloud Functions
-// // https://firebase.google.com/docs/functions/write-firebase-functions
-//
 
 //  CONFIGURAR
 const MIN_TEMPERATURE = 25;
 const MAX_TEMPERATURE = 30;
 const PROJECT_ID = "bioforest-smart";
-const SERVICE_ACCOUNT =
-  "./bioforest-smart-firebase-adminsdk-tuekl-0af050abb9.json";
-//  CONSTANTS
-const MESSAGING_SCOPE = "https://www.googleapis.com/auth/firebase.messaging";
-const SCOPES = [MESSAGING_SCOPE];
-const HOST = "fcm.googleapis.com";
-const PATH = "/v1/projects/" + PROJECT_ID + "/messages:send";
 
 const app = admin.initializeApp({
-  credential: admin.credential.cert(SERVICE_ACCOUNT),
+  credential: admin.credential.applicationDefault(),
   databaseURL: "https://bioforest-smart.firebaseio.com",
 });
 
-function getAccessToken() {
-  return new Promise(function(resolve, reject) {
-    const key = require(SERVICE_ACCOUNT);
-    const jwtClient = new google.auth.JWT(
-      key.client_email,
-      null,
-      key.private_key,
-      SCOPES,
-      null
-    );
-    jwtClient.authorize(function(err, tokens) {
-      if (err) {
-        functions.logger.error(err);
-        reject(err);
-        return;
-      }
-      resolve(tokens.access_token);
-    });
-  });
-}
-
 function sendFcmMessage(fcmMessage) {
-  return new Promise((resolve, reject) => {
-    getAccessToken().then(function(accessToken) {
-      var options = {
-        hostname: HOST,
-        path: PATH,
-        method: "POST",
-        headers: {
-          Authorization: "Bearer " + accessToken,
-        },
-      };
-      var request = https.request(options, function(resp) {
-        resp.setEncoding("utf8");
-        resp.on("data", (data) => {
-          resolve(JSON.parse(data));
-        });
-      });
-      request.on("error", (err) => {
-        reject(JSON.parse(err));
-      });
-      request.write(JSON.stringify(fcmMessage));
-      request.end();
-    });
-  });
+  functions.logger.info(`messaging push`);
+  return admin.messaging().sendMulticast(fcmMessage);
 }
 
 exports.onChangeTemperature = functions.database
@@ -94,46 +40,59 @@ exports.onChangeTemperature = functions.database
           let userDocs = await app
             .firestore()
             .collection("users")
-            .get();
+            .listDocuments();
 
-          functions.logger.info(`Users: ${userDocs.size}`);
+          functions.logger.info(`Users: ${userDocs.length}`);
+          let tokens = [];
+          await Promise.all(
+            userDocs.map(async (doc) => {
+              try {
+                let tokenDocs = await doc.collection("tokens").get();
+                functions.logger.info(`Tokens ${doc.id}: ${tokenDocs.size}`);
+                tokenDocs.docs.forEach(async (snap) => {
+                  const { token } = snap.data();
+                  tokens.push(token);
+                });
+              } catch (error) {
+                functions.logger.error("Tokens error " + error.message);
+              }
+              return doc;
+            })
+          );
+          functions.logger.info("send push to " + tokens.length);
+          try {
+            let response = await sendFcmMessage({
+              tokens,
+              notification: {
+                title: `Temperatura fuera de rango`,
+                body: `${temperature}ºC - ${roomName}`,
+              },
+              webpush: {
+                fcm_options: {
+                  link: `https://${PROJECT_ID}.web.app/`,
+                },
+                notification: {
+                  title: `Temperatura fuera de rango`,
+                  body: `${temperature}ºC - ${roomName}`,
+                  icon: `https://${PROJECT_ID}.web.app/img/icons/android-chrome-512x512.png`,
+                },
+              },
+            });
 
-          userDocs.docs.forEach(async (doc) => {
-            try {
-              let tokenDocs = await doc.ref.collection("tokens").get();
-
-              functions.logger.info(`Tokens ${doc.id}: ${tokenDocs.size}`);
-              tokenDocs.docs.forEach(async (snap) => {
-                const { token } = snap.data();
-                functions.logger.info("send push to " + doc.id);
-                try {
-                  await sendFcmMessage({
-                    message: {
-                      token,
-                      notification: {
-                        title: `Temperatura fuera de rango`,
-                        body: `${temperature}ºC - ${roomName}`,
-                      },
-                      webpush: {
-                        fcm_options: {
-                          link: `https://${PROJECT_ID}.web.app/`,
-                        },
-                        notification: {
-                          title: `Temperatura fuera de rango`,
-                          body: `${temperature}ºC - ${roomName}`,
-                          icon: `https://${PROJECT_ID}.web.app/img/icons/android-chrome-512x512.png`,
-                        },
-                      },
-                    },
-                  });
-                } catch (error) {
-                  functions.logger.error("TODO: Remove token " + error.message);
+            if (response.failureCount > 0) {
+              const failedTokens = [];
+              response.responses.forEach((resp, idx) => {
+                if (!resp.success) {
+                  failedTokens.push(tokens[idx]);
                 }
               });
-            } catch (error) {
-              functions.logger.error("Tokens error " + error.message);
+              console.log(
+                "List of tokens that caused failures: " + failedTokens
+              );
             }
-          });
+          } catch (error) {
+            functions.logger.error("TODO: Remove token " + error.message);
+          }
         });
     }
     return null;
