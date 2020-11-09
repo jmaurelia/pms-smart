@@ -1,5 +1,6 @@
 import router from "@/router";
 import * as firebase from "@/firebase";
+const pkg = require("../../../package.json");
 
 firebase.messaging.onMessage((payload) => {
   console.log("Message received. ", payload);
@@ -90,7 +91,7 @@ export default {
       commit("SET_VALIDATED", null);
 
       dispatch("Rooms/fetchRooms", userProfile.data().rooms, { root: true });
-      dispatch("getUserDeviceToken");
+      dispatch("getUserDeviceToken", payload.uid);
     },
     async signOut({ commit }) {
       await firebase.auth.signOut();
@@ -103,12 +104,37 @@ export default {
 
       router.push({ name: "Login" });
     },
-    async getUserDeviceToken({ commit }) {
+    async getUserDeviceToken({ commit }, uid) {
       try {
         await notificationsPermisionRequest();
         let deviceToken = await getDeviceToken();
         console.log({ deviceToken });
-        commit("SET_DEVICE_TOKEN", deviceToken);
+
+        const existToken = await firebase.usersCollection
+          .doc(uid)
+          .collection("tokens")
+          .where("token", "==", deviceToken)
+          .get();
+
+        if (existToken.size === 0) {
+          const tokenDoc = await firebase.usersCollection
+            .doc(uid)
+            .collection("tokens")
+            .doc();
+
+          tokenDoc
+            .set({
+              created_at: new Date(),
+              type: "web",
+              os: navigator.userAgent,
+              version: pkg.version,
+              token: deviceToken,
+            })
+            .then((data) => {
+              commit("SET_DEVICE_TOKEN", deviceToken);
+            })
+            .catch((error) => console.error(error));
+        }
       } catch (error) {
         console.error(error);
       }

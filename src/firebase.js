@@ -23,6 +23,5 @@ const database = firebase.database();
 const messaging = firebase.messaging();
 // collection references
 const usersCollection = db.collection("users");
-
 // export utils/refs
 export { db, auth, database, messaging, usersCollection };
