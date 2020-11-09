@@ -16,8 +16,8 @@
             <h2 class="header__title">{{ item.name }}</h2>
             <!-- secondary -->
             <p class="header__secondary text-muted">
-              <span v-if="item.description">{{ item.description }}</span>
-              <span>Sin Descripción</span>
+              <span v-if="!item.description">Sin Descripción</span>
+              <span v-else>{{item.description}}</span>
             </p>
           </b-col>
           <b-col cols="4" class="text-right">
