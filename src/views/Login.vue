@@ -118,12 +118,12 @@
 
       <!-- footer -->
       <div class="authentication__form__footer">
-        <p class="text-muted">PMS Soluciones v1.3</p>
+        <p class="text-muted">PMS Soluciones v.1.0</p>
       </div>
     </div>
 
     <!-- image -->
-    <div class="authentication__image">imagen</div>
+    <div class="authentication__image"></div>
   </div>
 </template>
 

@@ -16,8 +16,8 @@
             <h2 class="header__title">{{ item.name }}</h2>
             <!-- secondary -->
             <p class="header__secondary text-muted">
-              <span v-if="item.description">{{ item.description }}</span>
-              <span>Sin Descripción</span>
+              <span v-if="!item.description">Sin Descripción</span>
+              <span v-else>{{item.description}}</span>
             </p>
           </b-col>
           <b-col cols="4" class="text-right">
@@ -172,6 +172,7 @@ export default {
 
               // on
               databaseRef.child(value.index).set(0);
+              database.ref(this.$route.params.roomId).update({ reset: true });
             }
           })
           .catch((err) => {
@@ -179,7 +180,7 @@ export default {
           });
       }
     },
-    // All Bottom
+    // Reset Programs
     offPrograms() {
       this.$bvModal
         .msgBoxConfirm("Apagar todos los programas", {
@@ -196,10 +197,16 @@ export default {
         .then((value) => {
           // const
           const programs = Object.keys(this.item.programs);
-          const databaseRef = database.ref(this.$route.params.roomId + "/programs");
+          const databaseRef = database.ref(
+            this.$route.params.roomId + "/programs"
+          );
+          const resetRef = database.ref(this.$route.params.roomId);
 
-          // set
-          programs.forEach(element => {
+          // reset relay
+          resetRef.update({ reset: 0 });
+
+          // set true programs
+          programs.forEach((element) => {
             databaseRef.child(element).set(true);
           });
         })
