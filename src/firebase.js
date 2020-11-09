@@ -20,7 +20,11 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 const auth = firebase.auth();
 const database = firebase.database();
-const messaging = firebase.messaging();
+
+let messaging = null;
+if (firebase.messaging.isSupported()) {
+  messaging = firebase.messaging();
+}
 // collection references
 const usersCollection = db.collection("users");
 // export utils/refs

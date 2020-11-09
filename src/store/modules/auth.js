@@ -2,10 +2,13 @@ import router from "@/router";
 import * as firebase from "@/firebase";
 const pkg = require("../../../package.json");
 
-firebase.messaging.onMessage((payload) => {
-  console.log("Message received. ", payload);
-  // ...
-});
+if (firebase.messaging) {
+  firebase.messaging.onMessage((payload) => {
+    console.log("Message received. ", payload);
+    // ...
+  });
+}
+
 function notificationsPermisionRequest() {
   return new Promise((resolve, reject) => {
     if (firebase.messaging) {
