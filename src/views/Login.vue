@@ -134,8 +134,8 @@ export default {
   data() {
     return {
       loginForm: {
-        email: "joaquin.maurelia@gmail.com",
-        password: "Pms2020",
+        email: "",
+        password: "",
       },
     };
   },
