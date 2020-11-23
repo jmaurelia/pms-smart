@@ -24,6 +24,9 @@ const database = firebase.database();
 let messaging = null;
 if (firebase.messaging.isSupported()) {
   messaging = firebase.messaging();
+  messaging.usePublicVapidKey(
+    "BJRpu-GjKckOHG1NdNHC0NY-mGPAlrcyMckFTwpyzCKFQNo15VzK638nu2PQpI95aDF5m0XxIGXT8uzO4Je6qiQ"
+  );
 }
 // collection references
 const usersCollection = db.collection("users");
