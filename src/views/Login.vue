@@ -114,12 +114,21 @@
             </b-button>
           </div>
         </b-form>
+        <b-button
+          block
+          variant="info"
+          size="lg"
+          class="mt-4"
+          v-if="updateExists"
+          @click="refreshApp"
+        >
+          Actualizar
+        </b-button>
       </div>
 
       <!-- footer -->
-      <b-button :value="updateExists" @click="refreshApp">Actualizar</b-button>
       <div class="authentication__form__footer">
-        <p class="text-muted">PMS Soluciones v1.2.00</p>
+        <p class="text-muted">PMS Soluciones 2020</p>
       </div>
     </div>
 
@@ -129,7 +138,6 @@
 </template>
 
 <script>
-import update from "../mixins/update";
 import { mapActions, mapState } from "vuex";
 
 export default {
@@ -139,9 +147,12 @@ export default {
         email: "",
         password: "",
       },
+      //
+      refreshing: false,
+      registration: null,
+      updateExists: false,
     };
   },
-  mixins: [update],
   // computed
   computed: {
     ...mapState("Auth", ["isLoading", "isValidated"]),
@@ -152,6 +163,28 @@ export default {
     loginProcess() {
       this.logIn(this.loginForm);
     },
+    //
+    showRefreshUI(e) {
+      this.registration = e.detail;
+      this.updateExists = true;
+    },
+    refreshApp() {
+      this.updateExists = false;
+      if (!this.registration || !this.registration.waiting) {
+        return;
+      }
+      this.registration.waiting.postMessage("skipWaiting");
+    },
+  },
+  created() {
+    document.addEventListener("swUpdated", this.showRefreshUI, { once: true });
+    if (navigator.serviceWorker) {
+      navigator.serviceWorker.addEventListener("controllerchange", () => {
+        if (this.refreshing) return;
+        this.refreshing = true;
+        window.location.reload();
+      });
+    }
   },
 };
 </script>
