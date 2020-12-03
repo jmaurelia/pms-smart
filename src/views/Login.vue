@@ -119,7 +119,7 @@
       <!-- footer -->
       <b-button :value="updateExists" @click="refreshApp">Actualizar</b-button>
       <div class="authentication__form__footer">
-        <p class="text-muted">PMS Soluciones v1.2.03</p>
+        <p class="text-muted">PMS Soluciones v1.2.00</p>
       </div>
     </div>
 
