@@ -1,6 +1,6 @@
 <template>
   <!-- Dashboard -->
-  <div class="dashboard">
+  <div class="dashboard" :class="updateState ? 'no-scroll' : '' ">
     <!-- Content -->
     <div class="dashboard__content">
       <!-- Header -->
@@ -17,14 +17,14 @@
             <!-- secondary -->
             <p class="header__secondary text-muted">
               <span v-if="!item.description">Sin Descripción</span>
-              <span v-else>{{item.description}}</span>
+              <span v-else>{{ item.description }}</span>
             </p>
           </b-col>
-          <b-col cols="4" class="text-right">
+          <!-- <b-col cols="4" class="text-right">
             <b-button @click="offPrograms()" v-if="!!item.programs"
               ><b-icon icon="power" aria-hidden="true" class="mb-1"
             /></b-button>
-          </b-col>
+          </b-col> -->
         </b-row>
       </div>
       <!-- ./Header -->
@@ -56,8 +56,9 @@
             xl="3"
             v-for="(item, index) in item.programs"
             :key="index"
+            
           >
-            <div class="pms__items__item">
+            <div class="pms__items__item" v-if="index !== 'reset'">
               <div class="item__icon">
                 <b-icon
                   icon="brightness-alt-high-fill"
@@ -65,17 +66,10 @@
                 />
               </div>
               <div class="item__name">Programa {{ index }}</div>
-              <div
-                class="item__switch"
-                :class="[item ? '' : 'item__switch--on']"
-                @click="
-                  confirmModal({
-                    index,
-                    item,
-                    room: $route.params.roomId,
-                  })
-                "
-              ></div>
+              <!-- Switch -->
+              <div  class="item__switch" :class="[item ? '' : 'item__switch--on']"
+                    @click="changeState({index, item, room: $route.params.roomId,})" />
+              <!-- ./Switch -->
             </div>
           </b-col>
         </b-row>
@@ -84,6 +78,15 @@
 
       <!-- Loading -->
       <transition name="fade"><Loading v-if="isLoading" /></transition>
+      <transition name="fade">
+        <div class="load-program" v-if="updateState">
+          <div class="load-program__info text-center">
+            <img src="../assets/planty.gif" alt="animation">
+            <h4>Cambiando Programa de Riego</h4>
+          </div>
+        </div>
+      </transition>
+      
       <!-- ./Loading -->
     </div>
     <!-- ./Content -->
@@ -91,12 +94,13 @@
     <!-- Sidebar -->
     <Sidebar />
     <!-- ./Sidebar -->
+    
   </div>
   <!-- ./Dashboard -->
 </template>
 
 <script>
-import { database } from "@/firebase";
+import { database, logsCollection } from "@/firebase";
 import Loading from "./shared/Loading";
 import Sidebar from "./shared/Sidebar";
 
@@ -110,6 +114,10 @@ export default {
       item: {},
       database: database.ref(this.$route.params.roomId),
       isLoading: true,
+      
+      //
+      updateState: false,
+      userIn: this.$store.state.Auth.user
     };
   },
   filters: {
@@ -122,6 +130,49 @@ export default {
     },
   },
   methods: {
+
+    // Change State
+    async changeState(v) {
+
+      console.log(v)
+      
+      // const
+      const date = new Date()
+      const referenceBD = database.ref(v.room + "/programs");
+      const programON = Object.keys(this.item.programs).filter((x) => {return this.item.programs[x] !== true})
+
+      // on
+      if(v.item) {
+
+        this.updateState = true;
+
+        // guardar log
+        await logsCollection.doc(String(v.room)).collection("dates").doc().set(
+          {
+            date: date,
+            user: this.userIn.name + " " + this.userIn.lastname,
+            action: "on " + v.index
+          }
+        )
+
+        // apagar encendido
+        if(programON.length !== 0) {referenceBD.child(String(programON)).set(true)}
+        // encender
+        setTimeout(() => { referenceBD.child(String(v.index)).set(false); }, 4500);
+        // reset
+        setTimeout(() => { referenceBD.child(String("reset")).set(true); }, 2500);
+        //
+        setTimeout(() => { this.updateState = false; }, 6000);
+        
+      } 
+      // off
+      else {
+        this.updateState = true;
+        referenceBD.child(String(v.index)).set(true);
+        setTimeout(() => {referenceBD.child(String("reset")).set(false);}, 5500);
+        setTimeout(() => { this.updateState = false; }, 6000);
+      }
+    },
     // GetData Room
     getData() {
       return new Promise((resolve, reject) => {
@@ -135,84 +186,8 @@ export default {
     async loadingData() {
       await this.getData();
       this.isLoading = false;
-    },
-    // Update State
-    confirmModal(value) {
-      if (value.item) {
-        this.$bvModal
-          .msgBoxConfirm(
-            "Confirmar si quiere activar el programa " + value.index,
-            {
-              title: "Confirmar",
-              size: "sm",
-              buttonSize: "sm",
-              okVariant: "danger",
-              okTitle: "Confirmar",
-              cancelTitle: "Cancelar",
-              footerClass: "p-2",
-              hideHeaderClose: false,
-              centered: true,
-            }
-          )
-          .then((data) => {
-            if (data) {
-              // const
-              const databaseRef = database.ref(
-                this.$route.params.roomId + "/programs"
-              );
-              const programs = this.item.programs;
-              const activeted = Object.keys(programs).filter((x) => {
-                return programs[x] !== true;
-              });
 
-              // validate
-              if (activeted.length !== 0) {
-                databaseRef.child(String(activeted)).set(true);
-              }
-
-              // on
-              databaseRef.child(value.index).set(0);
-              database.ref(this.$route.params.roomId).update({ reset: true });
-            }
-          })
-          .catch((err) => {
-            console.log(err);
-          });
-      }
-    },
-    // Reset Programs
-    offPrograms() {
-      this.$bvModal
-        .msgBoxConfirm("Apagar todos los programas", {
-          title: "Confirmar",
-          size: "sm",
-          buttonSize: "sm",
-          okVariant: "danger",
-          okTitle: "Confirmar",
-          cancelTitle: "Cancelar",
-          footerClass: "p-2",
-          hideHeaderClose: false,
-          centered: true,
-        })
-        .then((value) => {
-          // const
-          const programs = Object.keys(this.item.programs);
-          const databaseRef = database.ref(
-            this.$route.params.roomId + "/programs"
-          );
-          const resetRef = database.ref(this.$route.params.roomId);
-
-          // reset relay
-          resetRef.update({ reset: 0 });
-
-          // set true programs
-          programs.forEach((element) => {
-            databaseRef.child(element).set(true);
-          });
-        })
-        .catch((e) => {
-          console.log(e);
-        });
+      console.log(this.item);
     },
   },
   mounted() {
@@ -232,4 +207,26 @@ export default {
 .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
   opacity: 0;
 }
+
+.load-program {
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100vw;
+  height: 100vh;
+  position: absolute;
+  background-color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  img {
+    width: auto;
+    height: 180px;
+  }
+}
+.no-scroll {
+  overflow: hidden;
+}  
 </style>

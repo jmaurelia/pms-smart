@@ -84,6 +84,8 @@ export default {
           await reference.child(String(programActive)).set(0);
         }
 
+        console.log('HOLA')
+
         await reference.child(index).set("on");
       }
     },
