@@ -152,7 +152,7 @@ export default {
         setTimeout(() => { database.ref(v.room + "/programs").child('reset').set(true); }, 2000);
 
         // on
-        setTimeout(() => { database.ref(v.room + "/programs").child(v.index).set(false); }, 3000);
+        setTimeout(() => { database.ref(v.room + "/programs").child(v.index).set(false); }, 4000);
 
 
       } else {
