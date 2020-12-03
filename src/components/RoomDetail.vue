@@ -163,6 +163,8 @@ export default {
         setTimeout(() => { referenceBD.child(String("reset")).set(true); }, 2500);
         //
         setTimeout(() => { this.updateState = false; }, 6000);
+        // reforsar
+        setTimeout(() => { referenceBD.child(String(v.index)).set(false); }, 7000);
         
       } 
       // off
@@ -171,6 +173,7 @@ export default {
         referenceBD.child(String(v.index)).set(true);
         setTimeout(() => {referenceBD.child(String("reset")).set(false);}, 5500);
         setTimeout(() => { this.updateState = false; }, 6000);
+        setTimeout(() => {referenceBD.child(String("reset")).set(false);}, 7000);
       }
     },
     // GetData Room
