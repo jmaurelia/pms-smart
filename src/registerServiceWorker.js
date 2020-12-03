@@ -11,11 +11,8 @@ if (process.env.NODE_ENV === "production") {
           "For more details, visit https://goo.gl/AFskqB"
       );
     },
-    registered (registration) {
+    registered () {
       console.log("Service worker has been registered.");
-      setInterval(() => {
-        registration.update();
-      }, 1000 * 60 * 60); // e.g. hourly checks
     },
     cached() {
       console.log("Content has been cached for offline use.");
@@ -25,9 +22,6 @@ if (process.env.NODE_ENV === "production") {
     },
     updated() {
       console.log("New content is available; please refresh.");
-      document.dispatchEvent(
-        new CustomEvent('swUpdated', { detail: registration })
-      );
     },
     offline() {
       console.log(
