@@ -117,8 +117,9 @@
       </div>
 
       <!-- footer -->
+      <b-button v-if="updateExists" @click="refreshApp">Actualizar</b-button>
       <div class="authentication__form__footer">
-        <p class="text-muted">PMS Soluciones v1.2.12</p>
+        <p class="text-muted">PMS Soluciones v1.2.03</p>
       </div>
     </div>
 
@@ -128,6 +129,7 @@
 </template>
 
 <script>
+import update from "../mixins/update";
 import { mapActions, mapState } from "vuex";
 
 export default {
@@ -139,6 +141,7 @@ export default {
       },
     };
   },
+  mixins: [update],
   // computed
   computed: {
     ...mapState("Auth", ["isLoading", "isValidated"]),
