@@ -152,29 +152,28 @@ export default {
           if(value) {
 
             if(v.item) {
+
               // 00. iniciar animación
               this.updateState = true;
-              database.ref(v.room + "/programs").child('reset').set(true)
 
-              // 01. apagar si es que hay un programa encendido
+              // 01. si hay uno encendido
               const programON = Object.keys(this.item.programs).filter((x) => {return this.item.programs[x] !== true});
-              if(programON.length > 0) { database.ref(v.room + "/programs").child(String(programON)).set(true) }
+              setTimeout(() => { database.ref(v.room + "/programs").child(String(programON[0])).set(true); console.log("Apagar si hay encendido") }, 1000);
 
-              // 02. pulso reset
-              setTimeout(() => { database.ref(v.room + "/programs").child('reset').set(false) }, 1000);
-              setTimeout(() => { database.ref(v.room + "/programs").child('reset').set(true) }, 2000);
+              // 02. volver el reset a true
+              setTimeout(() => { database.ref(v.room + "/programs").child('reset').set(true); console.log("reset a true")  }, 3000);
 
               // 03. encender programa seleccionado
-              setTimeout(() => { database.ref(v.room + "/programs").child(v.index).set(false); }, 4000);
+              setTimeout(() => { database.ref(v.room + "/programs").child(v.index).set(false); console.log("Enceder correspondiente")  }, 5000);
 
               // 04. desactivar animación
               setTimeout(() => { this.updateState = false; }, 6000);
 
             } else {
               this.updateState = true;
-              
-              // 01. apagar programa selecionado
-              setTimeout(() => { database.ref(v.room + "/programs").child(v.index).set(true); }, 1000);
+
+              //
+               setTimeout(() => { database.ref(v.room + "/programs").child(v.index).set(true); console.log("Apagar Encendido")  }, 1500);
 
               // 02. activar reset
               setTimeout(() => { database.ref(v.room + "/programs").child('reset').set(false) }, 3000);
