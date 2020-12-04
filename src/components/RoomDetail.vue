@@ -135,38 +135,63 @@ export default {
   methods: {
     // Change State
     async changeState(v) {
-      this.updateState = true;
-      const programON = Object.keys(this.item.programs).filter((x) => {return this.item.programs[x] !== true})
-      
-      // reset & update
-      database.ref(v.room + "/programs").child('reset').set(true)
+      database.ref(v.room + "/programs").child('reset').set(0)
 
-      if(v.item) {
+      this.$bvModal
+        .msgBoxConfirm("Confirmar que quiere " + (v.item ? "encender" : "apagar") + " el programa " + v.index, {
+          title: "Atención",
+          size: "sm",
+          okVariant: "success",
+          okTitle: "Confirmar",
+          cancelTitle: "Cancelar",
+          footerClass: "p-2",
+          hideHeaderClose: false,
+          centered: true,
+        })
+        .then((value) => {
+          if(value) {
 
-        if(programON.length > 0) {
-          database.ref(v.room + "/programs").child(String(programON)).set(true)
-        }
+            if(v.item) {
+              // 00. iniciar animación
+              this.updateState = true;
+              database.ref(v.room + "/programs").child('reset').set(true)
 
-        // reset
-        setTimeout(() => { database.ref(v.room + "/programs").child('reset').set(false); }, 1000);
-        setTimeout(() => { database.ref(v.room + "/programs").child('reset').set(true); }, 2000);
+              // 01. apagar si es que hay un programa encendido
+              const programON = Object.keys(this.item.programs).filter((x) => {return this.item.programs[x] !== true});
+              if(programON.length > 0) { database.ref(v.room + "/programs").child(String(programON)).set(true) }
 
-        // on
-        setTimeout(() => { database.ref(v.room + "/programs").child(v.index).set(false); }, 4000);
+              // 02. pulso reset
+              setTimeout(() => { database.ref(v.room + "/programs").child('reset').set(false) }, 1000);
+              setTimeout(() => { database.ref(v.room + "/programs").child('reset').set(true) }, 2000);
 
+              // 03. encender programa seleccionado
+              setTimeout(() => { database.ref(v.room + "/programs").child(v.index).set(false); }, 4000);
 
-      } else {
+              // 04. desactivar animación
+              setTimeout(() => { this.updateState = false; }, 6000);
 
-        // reset
-        setTimeout(() => { database.ref(v.room + "/programs").child('reset').set(false); }, 1000);;
+            } else {
+              this.updateState = true;
+              
+              // 01. apagar programa selecionado
+              setTimeout(() => { database.ref(v.room + "/programs").child(v.index).set(true); }, 1000);
 
-        // off
-        setTimeout(() => { database.ref(v.room + "/programs").child(v.index).set(true); }, 2000);
+              // 02. activar reset
+              setTimeout(() => { database.ref(v.room + "/programs").child('reset').set(false) }, 3000);
 
-      }
+              // 03. desactivar animación
+              setTimeout(() => { this.updateState = false; }, 4000);
+            }
+            
+          } else {
+            database.ref(v.room + "/programs").child('reset').set(true)
+          }
+        })
+        .catch((err) => {
+          console.log("Error");
+        });
 
-      setTimeout(() => { this.updateState = false; }, 6000);
-      
+        
     },
     // GetData Room
     getData() {
@@ -181,8 +206,6 @@ export default {
     async loadingData() {
       await this.getData();
       this.isLoading = false;
-
-      console.log(this.item);
     },
   },
   mounted() {
@@ -223,5 +246,48 @@ export default {
 }
 .no-scroll {
   overflow: hidden;
+}
+
+// Modal
+.modal {
+  // content
+  &-content {
+    border: 0;
+    margin: 0 30px;
+
+    @media (min-width: 768px) {
+      margin: 0;
+    }
+  }
+
+  // header
+  &-header {
+    border-bottom: 0;
+    padding-bottom: 10px;
+
+    .modal-title {
+      font-weight: 600;
+    }
+
+    .close {
+      display: none;
+    }
+  }
+
+  // body
+  &-body {
+    color: #6b7280;
+    padding-top: 0;
+  }
+
+  // footer
+  &-footer {
+    border-top: 0;
+    background-color: #f9fafb;
+
+    .btn {
+      font-weight: 600;
+    }
+  }
 }
 </style>
