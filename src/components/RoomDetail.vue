@@ -1,6 +1,6 @@
 <template>
   <!-- Dashboard -->
-  <div class="dashboard" :class="updateState ? 'no-scroll' : '' ">
+  <div class="dashboard" :class="updateState ? 'no-scroll' : ''">
     <!-- Content -->
     <div class="dashboard__content">
       <!-- Header -->
@@ -56,7 +56,6 @@
             xl="3"
             v-for="(item, index) in item.programs"
             :key="index"
-            
           >
             <div class="pms__items__item" v-if="index !== 'reset'">
               <div class="item__icon">
@@ -67,8 +66,13 @@
               </div>
               <div class="item__name">Programa {{ index }}</div>
               <!-- Switch -->
-              <div  class="item__switch" :class="[item ? '' : 'item__switch--on']"
-                    @click="changeState({index, item, room: $route.params.roomId,})" />
+              <div
+                class="item__switch"
+                :class="[item ? '' : 'item__switch--on']"
+                @click="
+                  changeState({ index, item, room: $route.params.roomId })
+                "
+              />
               <!-- ./Switch -->
             </div>
           </b-col>
@@ -81,12 +85,12 @@
       <transition name="fade">
         <div class="load-program" v-if="updateState">
           <div class="load-program__info text-center">
-            <img src="../assets/planty.gif" alt="animation">
+            <img src="../assets/planty.gif" alt="animation" />
             <h4>Cambiando Programa de Riego</h4>
           </div>
         </div>
       </transition>
-      
+
       <!-- ./Loading -->
     </div>
     <!-- ./Content -->
@@ -94,12 +98,12 @@
     <!-- Sidebar -->
     <Sidebar />
     <!-- ./Sidebar -->
-    
   </div>
   <!-- ./Dashboard -->
 </template>
 
 <script>
+import moment from "moment";
 import { database, logsCollection } from "@/firebase";
 import Loading from "./shared/Loading";
 import Sidebar from "./shared/Sidebar";
@@ -114,10 +118,10 @@ export default {
       item: {},
       database: database.ref(this.$route.params.roomId),
       isLoading: true,
-      
+
       //
       updateState: false,
-      userIn: this.$store.state.Auth.user
+      userIn: this.$store.state.Auth.user,
     };
   },
   filters: {
@@ -130,49 +134,68 @@ export default {
     },
   },
   methods: {
-
     // Change State
     async changeState(v) {
+      // inciar loading
+      this.updateState = true;
 
-      console.log(v)
-      
-      // const
-      const date = new Date()
+      // variables
+      const sala = v.room;
+      const estado = v.item;
+      const programa = String(v.index);
       const referenceBD = database.ref(v.room + "/programs");
-      const programON = Object.keys(this.item.programs).filter((x) => {return this.item.programs[x] !== true})
+      const programaActivo = Object.keys(this.item.programs).filter((x) => {
+        return this.item.programs[x] !== true;
+      });
+      const logsReference = await logsCollection
+        .doc(String(v.room))
+        .collection("dates")
+        .doc(String(moment().format("D_MM_YYYY-HH_mm_ss")));
 
-      // on
-      if(v.item) {
+      // console.log("SALA: ", sala);
+      // console.log("ESTADO: ", estado);
+      // console.log("PROGRAMA: ", programa);
+      // console.log("PROGRAMA ACTIVO: ", !!programaActivo);
+      // console.log("-----------------");
 
-        this.updateState = true;
-
-        // guardar log
-        await logsCollection.doc(String(v.room)).collection("dates").doc().set(
-          {
-            date: date,
-            user: this.userIn.name + " " + this.userIn.lastname,
-            action: "on " + v.index
+      //encender
+      if (estado) {
+        if (programaActivo.length !== 0) {
+          referenceBD.child(String(programaActivo)).set(true);
+        }
+        referenceBD.child(programa).set(false, (error) => {
+          if (error) {
+            console.log("Error");
+          } else {
+            logsReference.set({
+              date: moment().format("D-MM-YYYY HH:mm:ss"),
+              user: this.userIn.name + " " + this.userIn.lastname,
+              program: programa,
+              action: "On",
+            });
           }
-        )
-
-        // apagar encendido
-        if(programON.length !== 0) {referenceBD.child(String(programON)).set(true)}
-        // encender
-        setTimeout(() => { referenceBD.child(String(v.index)).set(false); }, 4500);
-        // reset
-        setTimeout(() => { referenceBD.child(String("reset")).set(true); }, 2500);
-        //
-        setTimeout(() => { this.updateState = false; }, 6000);
-        
-      } 
-      // off
-      else {
-        this.updateState = true;
-        referenceBD.child(String(v.index)).set(true);
-        setTimeout(() => {referenceBD.child(String("reset")).set(false);}, 5500);
-        setTimeout(() => { this.updateState = false; }, 6000);
+        });
+      } else {
+        referenceBD.child(programa).set(true, (error) => {
+          if (error) {
+            console.log("Error");
+          } else {
+            logsReference.set({
+              date: moment().format("D-MM-YYYY HH:mm:ss"),
+              user: this.userIn.name + " " + this.userIn.lastname,
+              program: programa,
+              action: "Off",
+            });
+          }
+        });
       }
+
+      // apagar loading
+      setTimeout(() => {
+        this.updateState = false;
+      }, 1000);
     },
+
     // GetData Room
     getData() {
       return new Promise((resolve, reject) => {
@@ -228,5 +251,5 @@ export default {
 }
 .no-scroll {
   overflow: hidden;
-}  
+}
 </style>

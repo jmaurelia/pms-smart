@@ -8,13 +8,19 @@ const routes = [
   {
     path: '/',
     name: 'Home',
-    component: () => import('../views/Logs.vue'),
+    component: () => import('../views/Home.vue'),
     meta: { requiresAuth: true }
   },
   {
     path: '/room/:roomId',
     name: 'Room',
     component: () => import('../components/RoomDetail.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/logs',
+    name: 'Logs',
+    component: () => import('../views/Logs.vue'),
     meta: { requiresAuth: true }
   },
   {
