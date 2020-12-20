@@ -4,7 +4,7 @@ import { register } from "register-service-worker";
 const pkg = require("../package.json");
 
 if (process.env.NODE_ENV === "production") {
-  register(`${process.env.BASE_URL}firebase-messaging-sw.js?v=${pkg.version}`, {
+  register(`${process.env.BASE_URL}service-worker.js`, {
     ready() {
       console.log(
         "App is being served from cache by a service worker.\n" +
@@ -20,8 +20,13 @@ if (process.env.NODE_ENV === "production") {
     updatefound() {
       console.log("New content is downloading.");
     },
-    updated() {
+    updated(registration) {
       console.log("New content is available; please refresh.");
+      if (window.confirm("A new version is available, update now?")) {
+        const worker = registration.waiting;
+        worker.postMessage({ action: "SKIP_WAITING" });
+        // refresh the page or trigger a refresh programatically!  
+      }
     },
     offline() {
       console.log(

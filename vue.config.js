@@ -32,7 +32,7 @@ module.exports = {
     },
     workboxPluginMode: "InjectManifest",
     workboxOptions: {
-      swSrc: `src/firebase-messaging-sw.js`,
+      swSrc: `src/service-worker.js`,
     },
   },
 };
