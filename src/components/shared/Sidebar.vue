@@ -61,6 +61,8 @@
       </div>
       <!-- footer -->
       <div class="sidebar__footer">
+        <b-button onClick="window.location.href=window.location.href">Refresh Page</b-button>
+
         <b-link @click="signOut()"><b-icon icon="box-arrow-left" class="mr-4" />Cerrar Sesión</b-link>
       </div>
     </div>
