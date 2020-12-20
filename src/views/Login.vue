@@ -118,7 +118,7 @@
 
       <!-- footer -->
       <div class="authentication__form__footer">
-        <p class="text-muted">2</p>
+        <p class="text-muted">3</p>
       </div>
     </div>
 
