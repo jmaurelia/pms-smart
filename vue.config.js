@@ -31,7 +31,6 @@ module.exports = {
       permissions: ["file://*/*"],
     },
     workboxPluginMode: "InjectManifest",
-    workboxPluginMode: 'InjectManifest',
     workboxOptions: {
       swSrc: 'service-worker.js',
     },
