@@ -118,7 +118,7 @@
 
       <!-- footer -->
       <div class="authentication__form__footer">
-        <p class="text-muted">PMS Soluciones v1.0</p>
+        <p class="text-muted">1</p>
       </div>
     </div>
 
