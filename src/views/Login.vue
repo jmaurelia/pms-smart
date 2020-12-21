@@ -118,7 +118,7 @@
 
       <!-- footer -->
       <div class="authentication__form__footer">
-        <p class="text-muted">v1.1</p>
+        <p class="text-muted">v1.2</p>
       </div>
     </div>
 
