@@ -118,7 +118,7 @@
 
       <!-- footer -->
       <div class="authentication__form__footer">
-        <p class="text-muted">PM Soluciones v1.2</p>
+        <p class="text-muted">PM Soluciones v20.21</p>
       </div>
     </div>
 
