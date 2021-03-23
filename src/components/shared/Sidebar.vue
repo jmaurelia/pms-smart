@@ -63,7 +63,7 @@
       <div class="sidebar__footer">
 
         <b-link @click="signOut()"><b-icon icon="box-arrow-left" class="mr-4" />Cerrar Sesión</b-link>
-        <span class="version">v.1.2</span>
+        <span class="version">v.1.3</span>
       </div>
     </div>
 
