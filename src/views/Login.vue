@@ -134,8 +134,8 @@ export default {
   data() {
     return {
       loginForm: {
-        email: "",
-        password: "",
+        email: "test@pm.cl",
+        password: "qwerty123",
       },
     };
   },

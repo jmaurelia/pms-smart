@@ -152,11 +152,11 @@ export default {
         .collection("dates")
         .doc(String(moment().format("D_MM_YYYY-HH_mm_ss")));
 
-      // console.log("SALA: ", sala);
-      // console.log("ESTADO: ", estado);
-      // console.log("PROGRAMA: ", programa);
-      // console.log("PROGRAMA ACTIVO: ", !!programaActivo);
-      // console.log("-----------------");
+      console.log("SALA: ", sala);
+      console.log("ESTADO: ", estado);
+      console.log("PROGRAMA: ", programa);
+      console.log("PROGRAMA ACTIVO: ", !!programaActivo);
+      console.log("-----------------");
 
       //encender
       if (estado) {

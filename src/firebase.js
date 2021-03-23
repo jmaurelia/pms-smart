@@ -6,13 +6,13 @@ import "firebase/messaging";
 
 // firebase init - add your own config here
 const firebaseConfig = {
-  apiKey: "AIzaSyCb2nUuX7e2ESIMk2-bibxdGDVfeLfjKfA",
-  authDomain: "test-bioforest.firebaseapp.com",
-  databaseURL: "https://test-bioforest.firebaseio.com",
-  projectId: "test-bioforest",
-  storageBucket: "test-bioforest.appspot.com",
-  messagingSenderId: "1008814743830",
-  appId: "1:1008814743830:web:5a258d33f048d84113f037"
+  apiKey: "AIzaSyA9VZQyaSNKYPSz7-F7dNHa7bStaeS1f7c",
+  authDomain: "test-bioforest-2d504.firebaseapp.com",
+  databaseURL: "https://test-bioforest-2d504-default-rtdb.firebaseio.com/",
+  projectId: "test-bioforest-2d504",
+  storageBucket: "test-bioforest-2d504.appspot.com",
+  messagingSenderId: "774713158224",
+  appId: "1:774713158224:web:9d0ed295cf2441d18f7f55"
 };
 firebase.initializeApp(firebaseConfig);
 
