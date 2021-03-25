@@ -81,7 +81,7 @@
       <!-- ./Page -->
 
       <!-- Loading -->
-      <transition name="fade"><Loading v-if="isLoading" /></transition>
+      <transition name="fade"><Loading v-if="isLoading"/></transition>
       <transition name="fade">
         <div class="load-program" v-if="updateState">
           <div class="load-program__info text-center">
@@ -136,66 +136,27 @@ export default {
   methods: {
     // Change State
     async changeState(v) {
-      // inciar loading
       this.updateState = true;
 
-      // variables
-      const sala = v.room;
-      const estado = v.item;
-      const programa = String(v.index);
-      const referenceBD = database.ref(v.room + "/programs");
-      const programaActivo = Object.keys(this.item.programs).filter((x) => {
+      // CONST
+      const refPrograms = database.ref(v.room + "/programs");
+      const prevPrograma = Object.keys(this.item.programs).filter((x) => {
         return this.item.programs[x] !== true;
       });
-      const logsReference = await logsCollection
-        .doc(String(v.room))
-        .collection("dates")
-        .doc(String(moment().format("D_MM_YYYY-HH_mm_ss")));
 
-      console.log("SALA: ", sala);
-      console.log("ESTADO: ", estado);
-      console.log("PROGRAMA: ", programa);
-      console.log("PROGRAMA ACTIVO: ", !!programaActivo);
-      console.log("-----------------");
-
-      //encender
-      if (estado) {
-        if (programaActivo.length !== 0) {
-          referenceBD.child(String(programaActivo)).set(true);
-        }
-        referenceBD.child(programa).set(false, (error) => {
-          if (error) {
-            console.log("Error");
-          } else {
-            logsReference.set({
-              date: moment().format("D-MM-YYYY HH:mm:ss"),
-              user: this.userIn.name + " " + this.userIn.lastname,
-              program: programa,
-              action: "On",
-            });
-          }
-        });
+      if (prevPrograma.length) {
+        this.onProgram(v);
+        setTimeout(() => {
+          refPrograms.child(String(prevPrograma)).set(true);
+        }, 1500);
       } else {
-        referenceBD.child(programa).set(true, (error) => {
-          if (error) {
-            console.log("Error");
-          } else {
-            logsReference.set({
-              date: moment().format("D-MM-YYYY HH:mm:ss"),
-              user: this.userIn.name + " " + this.userIn.lastname,
-              program: programa,
-              action: "Off",
-            });
-          }
-        });
+        this.onProgram(v);
       }
 
-      // apagar loading
       setTimeout(() => {
         this.updateState = false;
-      }, 1000);
+      }, 1750);
     },
-
     // GetData Room
     getData() {
       return new Promise((resolve, reject) => {
@@ -205,16 +166,49 @@ export default {
         });
       });
     },
+    // ENCENDER PROGRAMA
+    async onProgram(value) {
+      const refPrograms = database.ref(value.room + "/programs");
+
+      const logsReference = await logsCollection
+        .doc(String(value.room))
+        .collection("dates")
+        .doc(String(moment().format("D_MM_YYYY-HH_mm_ss")));
+
+      if (value.item) {
+        refPrograms.child(String(value.index)).set(false);
+        await logsReference.set({
+          date: moment().format("D-MM-YYYY HH:mm:ss"),
+          user: this.$store.state.Auth.user,
+          program: value.index,
+          action: "on",
+        });
+      } else {
+        refPrograms.child(String(value.index)).set(true);
+        await logsReference.set({
+          date: moment().format("D-MM-YYYY HH:mm:ss"),
+          user: this.$store.state.Auth.user,
+          program: value.index,
+          action: "off",
+        });
+      }
+    },
     // Loading Data
     async loadingData() {
       await this.getData();
       this.isLoading = false;
 
-      console.log(this.item);
+      // console.log(this.item);
     },
   },
   mounted() {
     this.loadingData();
+    console.log(this.role)
+  },
+  computed: {
+    role() {
+      return this.$store.state.Auth.userData.role
+    }
   },
   beforeDestroy() {
     this.database.off("value");
