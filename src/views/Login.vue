@@ -118,7 +118,7 @@
 
       <!-- footer -->
       <div class="authentication__form__footer">
-        <p class="text-muted">PM Soluciones v1.21</p>
+        <p class="text-muted">PMS Soluciones v3.21</p>
       </div>
     </div>
 
@@ -134,8 +134,8 @@ export default {
   data() {
     return {
       loginForm: {
-        email: "",
-        password: "",
+        email: "test@pm.cl",
+        password: "qwerty123",
       },
     };
   },

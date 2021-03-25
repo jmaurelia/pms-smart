@@ -81,7 +81,7 @@
       <!-- ./Page -->
 
       <!-- Loading -->
-      <transition name="fade"><Loading v-if="isLoading" /></transition>
+      <transition name="fade"><Loading v-if="isLoading"/></transition>
       <transition name="fade">
         <div class="load-program" v-if="updateState">
           <div class="load-program__info text-center">
@@ -103,6 +103,7 @@
 </template>
 
 <script>
+import moment from "moment";
 import { database, logsCollection } from "@/firebase";
 import Loading from "./shared/Loading";
 import Sidebar from "./shared/Sidebar";
@@ -135,62 +136,26 @@ export default {
   methods: {
     // Change State
     async changeState(v) {
-      database.ref(v.room + "/programs").child('reset').set(0)
+      this.updateState = true;
 
-      this.$bvModal
-        .msgBoxConfirm("Confirmar que quiere " + (v.item ? "encender" : "apagar") + " el programa " + v.index, {
-          title: "Atención",
-          size: "sm",
-          okVariant: "success",
-          okTitle: "Confirmar",
-          cancelTitle: "Cancelar",
-          footerClass: "p-2",
-          hideHeaderClose: false,
-          centered: true,
-        })
-        .then((value) => {
-          if(value) {
+      // CONST
+      const refPrograms = database.ref(v.room + "/programs");
+      const prevPrograma = Object.keys(this.item.programs).filter((x) => {
+        return this.item.programs[x] !== true;
+      });
 
-            if(v.item) {
+      if (prevPrograma.length) {
+        this.onProgram(v);
+        setTimeout(() => {
+          refPrograms.child(String(prevPrograma)).set(true);
+        }, 1500);
+      } else {
+        this.onProgram(v);
+      }
 
-              // 00. iniciar animación
-              this.updateState = true;
-
-              // 01. si hay uno encendido
-              const programON = Object.keys(this.item.programs).filter((x) => {return this.item.programs[x] !== true});
-              setTimeout(() => { database.ref(v.room + "/programs").child(String(programON[0])).set(true); console.log("Apagar si hay encendido") }, 1000);
-
-              // 02. volver el reset a true
-              setTimeout(() => { database.ref(v.room + "/programs").child('reset').set(true); console.log("reset a true")  }, 3000);
-
-              // 03. encender programa seleccionado
-              setTimeout(() => { database.ref(v.room + "/programs").child(v.index).set(false); console.log("Enceder correspondiente")  }, 5000);
-
-              // 04. desactivar animación
-              setTimeout(() => { this.updateState = false; }, 6000);
-
-            } else {
-              this.updateState = true;
-
-              //
-               setTimeout(() => { database.ref(v.room + "/programs").child(v.index).set(true); console.log("Apagar Encendido")  }, 1500);
-
-              // 02. activar reset
-              setTimeout(() => { database.ref(v.room + "/programs").child('reset').set(false) }, 3000);
-
-              // 03. desactivar animación
-              setTimeout(() => { this.updateState = false; }, 4000);
-            }
-            
-          } else {
-            database.ref(v.room + "/programs").child('reset').set(true)
-          }
-        })
-        .catch((err) => {
-          console.log("Error");
-        });
-
-        
+      setTimeout(() => {
+        this.updateState = false;
+      }, 1750);
     },
     // GetData Room
     getData() {
@@ -201,14 +166,49 @@ export default {
         });
       });
     },
+    // ENCENDER PROGRAMA
+    async onProgram(value) {
+      const refPrograms = database.ref(value.room + "/programs");
+
+      const logsReference = await logsCollection
+        .doc(String(value.room))
+        .collection("dates")
+        .doc(String(moment().format("D_MM_YYYY-HH_mm_ss")));
+
+      if (value.item) {
+        refPrograms.child(String(value.index)).set(false);
+        await logsReference.set({
+          date: moment().format("D-MM-YYYY HH:mm:ss"),
+          user: this.$store.state.Auth.user,
+          program: value.index,
+          action: "on",
+        });
+      } else {
+        refPrograms.child(String(value.index)).set(true);
+        await logsReference.set({
+          date: moment().format("D-MM-YYYY HH:mm:ss"),
+          user: this.$store.state.Auth.user,
+          program: value.index,
+          action: "off",
+        });
+      }
+    },
     // Loading Data
     async loadingData() {
       await this.getData();
       this.isLoading = false;
+
+      // console.log(this.item);
     },
   },
   mounted() {
     this.loadingData();
+    console.log(this.role)
+  },
+  computed: {
+    role() {
+      return this.$store.state.Auth.userData.role
+    }
   },
   beforeDestroy() {
     this.database.off("value");
@@ -245,48 +245,5 @@ export default {
 }
 .no-scroll {
   overflow: hidden;
-}
-
-// Modal
-.modal {
-  // content
-  &-content {
-    border: 0;
-    margin: 0 30px;
-
-    @media (min-width: 768px) {
-      margin: 0;
-    }
-  }
-
-  // header
-  &-header {
-    border-bottom: 0;
-    padding-bottom: 10px;
-
-    .modal-title {
-      font-weight: 600;
-    }
-
-    .close {
-      display: none;
-    }
-  }
-
-  // body
-  &-body {
-    color: #6b7280;
-    padding-top: 0;
-  }
-
-  // footer
-  &-footer {
-    border-top: 0;
-    background-color: #f9fafb;
-
-    .btn {
-      font-weight: 600;
-    }
-  }
 }
 </style>
